@@ -1,0 +1,19 @@
+.logo {
+  max-width: 200px;
+  width: 100%;
+  display: flex;
+  margin: auto;
+  margin-top: 80px;
+  margin-bottom: 20px;
+}
+
+.loginBox {
+  max-width: 400px;
+  width: 100%;
+  position: center;
+  padding-left: 35px;
+  padding-right: 35px;
+  padding-top: 15px;
+  padding-bottom: 25px;
+  margin: auto;
+}
