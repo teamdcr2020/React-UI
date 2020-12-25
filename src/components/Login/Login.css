@@ -17,3 +17,226 @@
   padding-bottom: 25px;
   margin: auto;
 }
+/* ----------------------------------------- */
+.card-img-top{
+  height:200px;
+  width:200px;
+  justify-content: center;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+.doc_visit{
+  padding:10px;
+  text-align: center;
+  border: none;
+  font-weight: 700;
+  font-size: 20px;
+  color:#024B65;
+}
+.add_doc_visit{
+  padding:10px;
+  margin:0px;
+  border-radius: 30px;
+  background-color: #6cb043;
+  color:#fff;
+  border: none;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width:180px;
+}
+.footer{
+  text-align: center;
+  color:#024B65;
+  padding:50px;
+}
+.card_ratio{
+margin-top:30px;
+}
+
+
+@media only screen and (max-width: 600px) {
+  .footer{
+      display: none;
+  }
+}
+
+@media(min-width: 900px)
+  {
+  .button-menu-mobile
+  {
+  display:none;
+  padding:90px;
+
+  }
+  .home_footer{
+      background-color: cadetblue;
+      padding: 80px;
+      font-size:50px;
+      height: 300px;
+      
+  }
+  }
+
+
+
+
+ 
+  
+
+
+ 
+    
+    
+    
+    
+    
+  
+    /* -------------------------login_page--------------------------- */
+    #formContent {
+        margin-left:auto;
+        margin-right:auto;
+        display: inline-block;
+        justify-content: center;
+      -webkit-border-radius: 10px 10px 10px 10px;
+      border-radius: 10px 10px 10px 10px;
+      background:#024B65;
+      padding: 50px;
+      width: 100%;
+      position: relative;
+    
+    height:auto;
+      padding: 0px;
+     
+      text-align: center;
+    }
+    .first img{
+        width:140px;
+        height: 80px;
+        padding: 10px;
+    }
+    .one {
+      background-color: #024B65;
+      border: none;
+      color: #0d0d0d;
+      padding: 20px;
+      padding-bottom: 20px;
+      border:none;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      margin: 5px;
+     
+      border-bottom: 1px solid #fff;
+      
+      
+    }
+    .one1 {
+      background-color: #024B65;
+      border: none;
+      color: #0d0d0d;
+      padding: 20px;
+      padding-bottom: 20px;
+      border:none;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      margin: 5px;
+      border-bottom: 1px solid #fff;
+      
+      
+    }
+    .two{
+      display: inline-block;
+      background-color: #6cb043;
+      padding: 15px 32px;
+      border: none;
+      color: white;
+      margin:20px;
+      border-radius: 30px;
+      background-color: #6cb043;
+      color:#fff;
+      border: none;
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+      width:180px;
+    
+
+    }
+    .three{
+        font-weight: 400;
+        display: inline-block;
+        color:#fff;
+        padding:15px;
+    }
+    .login_form{
+      width:100%;
+        background-color:#024B65;
+        padding:90px 30px;
+        margin-left: 0px;
+        margin-right: 0px;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+     
+    }
+    
+    
+    
+    
+    
+    
+   
+    
+    
+  
+    
+   
+   
+
+
+
+
+
+
+
+
+
+  
+  /* Change styles for span and cancel button on extra small screens */
+  @media screen and (min-width: 360px) {
+    span.psw {
+       display: block;
+       float: none;
+    }
+    .cancelbtn {
+       width: 100%;
+    }
+  }
+
+    /* ----------------footer----------------- */
+   
+     
+    @media only screen and (max-width: 340px){
+
+    .button-menu-mobile{
+      padding: 20px;
+
+    }
+    .footer_icon{
+      color: #6cb043;
+      padding: 20px;
+      font-size: 20px;
+      display:block;
+    }
+    .fa{
+      padding:15px;
+    }
+    .footer_button{
+      padding:40px;
+    }
+    
+  }
+ 

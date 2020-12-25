@@ -3,11 +3,16 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import Doc_contact from './components/doctor_contact/Doc_contact';
 
 ReactDOM.render(
   <React.StrictMode>
     <App />
+    <Doc_contact/>
   </React.StrictMode>,
+  
+  
+
   document.getElementById('root')
 );
 

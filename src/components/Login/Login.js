@@ -4,8 +4,9 @@ import {Redirect} from 'react-router-dom';
 import './Login.css'
 import { TextField } from '@material-ui/core';
 import styled from "styled-components";
-import patenLogo from '../../images/dcr-Logo.png';
+import patenLogo from '../../images/company_logo.png';
 import {BeatLoader } from 'react-spinners'
+
 
 
 const LoginToAccount = styled.h1`
@@ -83,18 +84,22 @@ class Login extends Component{
 
         return(
             <>
-                <div className="loginBox">
-                
-                <img src={patenLogo} className='logo' alt="Paten Biotech logo"/>                
+                <div className="login_form">
+                <div id="formContent">
+                <div className="first">
+                <img src={patenLogo}  alt="Paten Biotech logo"/>    
+                </div>            
                 <LoginToAccount>Login</LoginToAccount>
-                    <TextField id="username-field" label="Username" name="username" onChange={this.onChange} type="text"  /> <br/>
-                    <TextField id="password-field" label="Password" name="password" onChange={this.onChange} type="password"  /> <br/>
+                    <input type="text" id="username-field" className="one" label="Username" name="username" onChange={this.onChange} type="text" placeholder="login"  /> <br/>
+                    <input type="text" id="password-field"  className="one1" label="Password" name="password" onChange={this.onChange} type="password"  placeholder="password"   /> <br/>
                     {/* <input type = "text" name= "username" onChange={this.onChange} />
                     <input type="password" name ="password" placeholder="password" onChange={this.onChange} /> */}
-                    <input type="submit" value="login" className="button" onClick={this.login} />
+                    <input type="submit" className="fourth two" value="login" onClick={this.login} />
                     {this.state.loginFailed &&  <div style = {{color: "red"}}>Login Failed! Invalid Username or password</div>}
                    
                     {this.state.awaitingResponse && <BeatLoader size='24px' color='blue' loading/>}
+                    <a className="three" href="#">Forgot Password?</a>
+                </div>
                 </div>
             </>
         );
