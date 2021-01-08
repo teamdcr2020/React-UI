@@ -8,7 +8,7 @@ import Doc_contact from './components/doctor_contact/Doc_contact';
 ReactDOM.render(
   <React.StrictMode>
     <App />
-    <Doc_contact/>
+    
   </React.StrictMode>,
   
   

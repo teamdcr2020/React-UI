@@ -1,7 +1,9 @@
-export function PostData(type, userData){
-    let BaseURL = 'https://psoyyte2sl.execute-api.us-east-1.amazonaws.com/dev/userlogin';
-
-    return new Promise((resolve, reject) => {
+import axios from 'axios';
+import React from 'react';
+export function PostData(type, userData, baseURL){
+    
+/*
+   return new Promise((resolve, reject) => {
         fetch(BaseURL, {
             method: 'POST',
             body: JSON.stringify(userData),
@@ -19,4 +21,24 @@ export function PostData(type, userData){
             reject(error);
         });
     });
+
+    */
+
+  
+    var headers = {
+    'content-type' :'application/json',
+    'operation' : '',
+    'Access-Control-Allow-Origin': '*'}
+    headers.operation = type;
+    console.log("sending operation header as +"+headers.operation);
+
+  return axios.post(baseURL, JSON.stringify(userData),{ headers})
+   .then(response =>{ console.log("response returned from backend: "+JSON.stringify(response)); return response;})
+   .catch(error => {
+       //this.setState({ errorMessage: error.message });
+       console.error('There was an error!', error);
+       return error;
+   });
+   
+    
 }

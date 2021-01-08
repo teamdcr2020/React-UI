@@ -6,7 +6,7 @@ import { TextField } from '@material-ui/core';
 import styled from "styled-components";
 import patenLogo from '../../images/company_logo.png';
 import {BeatLoader } from 'react-spinners'
-
+import jwt_decode from 'jwt-decode'
 
 
 const LoginToAccount = styled.h1`
@@ -38,14 +38,15 @@ class Login extends Component{
     }
 
     login(){
+        let baseURL = 'https://psoyyte2sl.execute-api.us-east-1.amazonaws.com/dev/userlogin';
         if(this.state.username && this.state.password){
             this.setState({awaitingResponse : true});
             //console.log(this.state.awaitingResponse)
-            PostData('login', this.state).then((result) => {
+            PostData('login', this.state, baseURL).then((result) => {
                 this.setState({awaitingResponse : false});
-                console.log("result from login service call : "+JSON.stringify(result.token));
-                if(result.token){
-                    sessionStorage.setItem('userData', result.token)
+                console.log("result from login service call : "+JSON.stringify(result.data.token));
+                if(result.data.token){
+                    sessionStorage.setItem('userData', JSON.stringify(jwt_decode(result.data.token)))
                     this.setState({redirect: true});
                     this.props.history.push('/home');
                 }
