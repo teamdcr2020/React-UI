@@ -17,6 +17,7 @@ class Home extends Component {
         super(props);
         this.state = {
             redirect: false
+            
         }
         this.logout = this.logout.bind(this);
         this.navigateToDoctorVisitForm = this.navigateToDoctorVisitForm.bind(this);
@@ -27,30 +28,59 @@ class Home extends Component {
 
     componentDidMount() {
 
-        this.saveDatatoSession(commonConstant.shopURL, commonConstant.GET_ALL_SHOP);
+        // this.saveDatatoSession(commonConstant.controllerURL, commonConstant.GET_ALL_SHOP);
 
-        this.saveDatatoSession(commonConstant.doctorURL, commonConstant.GET_ALL_DOCTOR);
+        // this.saveDatatoSession(commonConstant.controllerURL, commonConstant.GET_ALL_DOCTOR);
 
-        this.saveDatatoSession(commonConstant.businessAreaURL, commonConstant.GET_ALL_BUSINESSAREA);
+        // this.saveDatatoSession(commonConstant.controllerURL, commonConstant.GET_ALL_BUSINESSAREA);
+        
+        let userprofileData = JSON.parse(sessionStorage.getItem('userData'))
+        let headquarterId = '';
+        
+        if(userprofileData && userprofileData.userProfile && userprofileData.userProfile.headquarterId)
+        {
+            sessionStorage.setItem('headquarterId', JSON.stringify(userprofileData.userProfile.headquarterId))
+            headquarterId = userprofileData.userProfile.headquarterId
+            
+        }
+        
+        
 
-        this.saveDatatoSession(commonConstant.giftURL,commonConstant.GET_ALL_GIFT);
+        
 
-        //this.saveDatatoSession(commonConstant.productURL, commonConstant.GET_ALL_PRODUCT);
+        this.saveDatatoSession(commonConstant.controllerURL, this.state, commonConstant.GET_ALL_GIFT);
 
-        this.saveDatatoSession(commonConstant.companyURL, commonConstant.GET_ALL_COMPANY);
+       // this.saveDatatoSession(commonConstant.controllerURL, this.state,  commonConstant.GET_ALL_PRODUCT);
+
+        this.saveDatatoSession(commonConstant.controllerURL,  this.state, commonConstant.GET_ALL_HEADQUARTER);
+
+        this.saveDatatoSession(commonConstant.controllerURL, {id:headquarterId},  commonConstant.GET_DOCTORS_SHOPS_BY_HEADQUARTER_ID);
+     
+        
+        //this.saveDatatoSession(commonConstant.controllerURL, commonConstant.GET_ALL_COMPANY);
 
         //this.saveDatatoSession(commonConstant.userURL, commonConstant.GET_ALL_USER);
         
     }
 
-    saveDatatoSession(baseURL, operation)
+    saveDatatoSession(baseURL, payload, operation)
     {
-        PostData(operation, this.state, baseURL).then((result) => {
+
+        //alert("payload before: "+JSON.stringify(payload))
+        payload = {...payload, operation, authorization: 'bearer '+JSON.parse(sessionStorage.getItem('accessToken'))}
+       // alert("payload after: "+JSON.stringify(payload))
+        PostData(operation, payload, baseURL).then((result) => {
             
-            console.log("result from login service call : "+JSON.stringify(result.data));
+           // console.log("result from login service call : "+JSON.stringify(result.data.data));
+             
             if(result.data){
-                sessionStorage.setItem(operation, JSON.stringify(result.data.data))
+                
+                 
+                //alert("this 3 called")
+                sessionStorage.setItem(operation,JSON.stringify(result.data.data)) 
+             //   alert("this 4 called")
                 this.setState({redirect: true});
+               // alert("this 5 called")
             }
             else
             {
@@ -59,8 +89,7 @@ class Home extends Component {
         }).catch(error => console.log(JSON.stringify(error)));
 
     }
-
-
+  
     logout() {
         sessionStorage.setItem('userData', '');
         sessionStorage.clear();
@@ -93,7 +122,7 @@ class Home extends Component {
             <div>
                 <meta name="viewport" content="width=device-width, initial-scale = 1.0,maximum-scale=1.0, user-scalable=no" />
 
-               <Header/>
+               <Header {...this.props}/>
 
                 <div className="container" style={{height:'80%'}}>
 

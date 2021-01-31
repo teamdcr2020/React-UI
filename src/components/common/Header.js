@@ -50,6 +50,7 @@ class Header extends Component {
                             </ul>
                         </div>
                     </nav>
+                    <h5>Hello {JSON.parse(sessionStorage.getItem('userData')).userProfile.name}</h5>
                 </div>
             </div>
         )

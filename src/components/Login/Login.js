@@ -7,7 +7,7 @@ import styled from "styled-components";
 import patenLogo from '../../images/company_logo.png';
 import {BeatLoader } from 'react-spinners'
 import jwt_decode from 'jwt-decode'
-
+import * as commonConstant from '../common/CommonConstant'
 
 const LoginToAccount = styled.h1`
   width: 100%;
@@ -41,21 +41,24 @@ class Login extends Component{
     }
 
     login() {
-        let baseURL = 'https://gnni706pq0.execute-api.us-east-1.amazonaws.com/default/DCR-Controller';
+        
         if (this.state.username && this.state.password) {
             this.setState({ awaitingResponse: true });
             //console.log(this.state.awaitingResponse)
-            PostData('login', this.state, baseURL).then((result) => {
+            PostData('login', this.state, commonConstant.controllerURL).then((result) => {
                 this.setState({ awaitingResponse: false });
-                console.log("result from login service call : " + JSON.stringify(result));
+           //     console.log("result from login service call : " + JSON.stringify(result));
 
                 if (result) {
                     if (result.message && result.message.indexOf('401') >= 0) {
                         this.setState({ loginFailed: true })
                     }
                     else if (result.data ) {
-                        console.log("result.data.token"+JSON.parse(result.data.substring(1, result.data.length-1 )).token);
-                        sessionStorage.setItem('userData', JSON.stringify(jwt_decode(JSON.parse(result.data.substring(1, result.data.length-1 )).token)))
+                        // console.log("result.data.token"+JSON.parse(result.data.substring(1, result.data.length-1 )).token);
+                        sessionStorage.setItem('accessToken', JSON.stringify(result.data.token))
+                        // sessionStorage.setItem('userData', JSON.stringify(jwt_decode(JSON.parse(result.data.substring(1, result.data.length-1 )).token)))
+                        console.log(JSON.stringify(jwt_decode(result.data.token)))
+                        sessionStorage.setItem('userData', JSON.stringify(jwt_decode(result.data.token)))
                         this.setState({ redirect: true });
                         this.props.history.push('/home');
                     }
@@ -73,6 +76,7 @@ class Login extends Component{
 
     handleErrorResponse(error)
     {
+        this.setState({loginFailed: false})
         this.setState({errorOccured: true})
         console.log("login failed : "+error);
         console.log(JSON.stringify(error));
