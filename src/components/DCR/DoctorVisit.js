@@ -14,6 +14,8 @@ import minus from '../../images/minus.png'
 import Template from './DoctorVisitFormTemplate';
 import Header from '../common/Header'
 import Footer from '../common/Footer'
+import * as commonConstant from '../common/CommonConstant'
+
 class DoctorVisitForm {
   constructor() {
 
@@ -27,7 +29,9 @@ class DoctorVisitForm {
       lbl: '',
       gift: new Array(),
       remarks: '',
-      formCount: 1
+      formCount: 1,
+      userHeadquarter:{},
+      headquarterList:[]
 
     }
   }
@@ -43,7 +47,7 @@ class DoctorVisits extends Component {
       doctorVisitFormList: [new DoctorVisitForm()],
       noOfForms: 0,
       date: new Date()
-
+      
     }
     this.handleDateChange = this.handleDateChange.bind(this)
     this.changeSampleName = this.changeSampleName.bind(this)
@@ -53,6 +57,12 @@ class DoctorVisits extends Component {
   }
 
   componentDidMount() {
+    // var item = JSON.parse(sessionStorage.getItem(commonConstant.GET_ALL_HEADQUARTER)) 
+    // var headquarterInSession = sessionStorage.getItem('headquarterId');
+    // console.log("item: "+JSON.stringify(headquarterInSession))
+    // this.setState({userHeadquarter: headquarterInSession},()=>console.log('userHeadquarter'+JSON.stringify(this.state.userHeadquarter)))
+    // this.setState({headquarterList: item},()=>console.log('headquarterlist'+JSON.stringify(this.state.headquarterList)));
+    
 
   }
 
