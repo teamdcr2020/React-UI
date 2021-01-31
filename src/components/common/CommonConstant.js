@@ -13,12 +13,14 @@ export const GET_DOCTOR_BY_ID = "getdoctorbyid";
 export const GET_DOCTOR_BY_NAME = "getdoctorbyname";
 export const UPDATE_DOCTOR = "updatedoctorbyid";
 export const DELETE_DOCTOR = "deletedoctorbyid";
+
 export const ADD_SHOP = "addshop";
 export const GET_ALL_SHOP = "getshopsall";
 export const GET_SHOP_BY_ID = "getshopbyid";
 export const GET_SHOP_BY_NAME = "getshopbyname";
 export const UPDATE_SHOP = "updateshopbyid";
 export const DELETE_SHOP = "deleteshopbyid";
+
 export const ADD_BUSINESSAREA = "addbusinessarea";
 export const GET_ALL_BUSINESSAREA = "getbusinessareasall";
 export const GET_BUSINESSAREA_BY_ID = "getbusinessareabyid";

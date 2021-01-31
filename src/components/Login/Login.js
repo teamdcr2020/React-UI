@@ -29,7 +29,10 @@ class Login extends Component{
             password:'',
             redirect: false,
             loginFailed: false,
-            awaitingResponse:false
+            awaitingResponse:false,
+            errorOccured:false,
+            operation:'login',
+            errorMessage:'none'
         };
 
         this.login = this.login.bind(this);
@@ -37,38 +40,53 @@ class Login extends Component{
         this.handleErrorResponse = this.handleErrorResponse.bind(this);
     }
 
-    login(){
-        let baseURL = 'https://psoyyte2sl.execute-api.us-east-1.amazonaws.com/dev/userlogin';
-        if(this.state.username && this.state.password){
-            this.setState({awaitingResponse : true});
+    login() {
+        let baseURL = 'https://gnni706pq0.execute-api.us-east-1.amazonaws.com/default/DCR-Controller';
+        if (this.state.username && this.state.password) {
+            this.setState({ awaitingResponse: true });
             //console.log(this.state.awaitingResponse)
             PostData('login', this.state, baseURL).then((result) => {
-                this.setState({awaitingResponse : false});
-                console.log("result from login service call : "+JSON.stringify(result.data.token));
-                if(result.data.token){
-                    sessionStorage.setItem('userData', JSON.stringify(jwt_decode(result.data.token)))
-                    this.setState({redirect: true});
-                    this.props.history.push('/home');
+                this.setState({ awaitingResponse: false });
+                console.log("result from login service call : " + JSON.stringify(result));
+
+                if (result) {
+                    if (result.message && result.message.indexOf('401') >= 0) {
+                        this.setState({ loginFailed: true })
+                    }
+                    else if (result.data ) {
+                        console.log("result.data.token"+JSON.parse(result.data.substring(1, result.data.length-1 )).token);
+                        sessionStorage.setItem('userData', JSON.stringify(jwt_decode(JSON.parse(result.data.substring(1, result.data.length-1 )).token)))
+                        this.setState({ redirect: true });
+                        this.props.history.push('/home');
+                    }
+                    console.log("result.data: ||"+ result.data +"||");
+                    
                 }
-                else
-                {
-                    this.setState({loginFailed: true})
+                else {
+                    this.setState({ errorOccured: true })
                 }
             }).catch(error => this.handleErrorResponse(error));
 
         }
-        
+
     }
 
     handleErrorResponse(error)
     {
-        console.log(error);
+        this.setState({errorOccured: true})
+        console.log("login failed : "+error);
         console.log(JSON.stringify(error));
+        
     }
     onChange(e){
         this.setState({[e.target.name]:e.target.value});
         //this.setState({username:userinput});
         //this.setState({password:userinput});
+    }
+    componentWillMount()
+    {    
+        //alert(document.body.style.background )
+        //document.body.style.background = "#024B65";
     }
 
     render(){
@@ -85,10 +103,10 @@ class Login extends Component{
 
         return(
             <>
-                <div className="login_form">
+                <div className="login_form" style={{height:"100%"}}>
                 <div id="formContent">
                 <div className="first">
-                <img src={patenLogo}  alt="Paten Biotech logo"/>    
+                <img src={patenLogo} class="oval" alt="Paten Biotech logo"/>    
                 </div>            
                 <LoginToAccount>Login</LoginToAccount>
                     <input type="text" id="username-field" className="one" label="Username" name="username" onChange={this.onChange} type="text" placeholder="login"  /> <br/>
@@ -97,7 +115,7 @@ class Login extends Component{
                     <input type="password" name ="password" placeholder="password" onChange={this.onChange} /> */}
                     <input type="submit" className="fourth two" value="login" onClick={this.login} />
                     {this.state.loginFailed &&  <div style = {{color: "red"}}>Login Failed! Invalid Username or password</div>}
-                   
+                    {this.state.errorOccured &&  <div style = {{color: "red"}}>Something went wrong, Please contact support.</div>}
                     {this.state.awaitingResponse && <BeatLoader size='24px' color='blue' loading/>}
                     <a className="three" href="#">Forgot Password?</a>
                 </div>

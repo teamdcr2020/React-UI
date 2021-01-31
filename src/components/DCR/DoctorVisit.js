@@ -1,122 +1,161 @@
-import ReactMultiSelectCheckboxes from 'react-multiselect-checkboxes';
-import React, {Component} from 'react';
-import Calendar from 'react-calendar-pane';
-import moment, { calendarFormat } from 'moment';
-import date from 'react-calendar-pane';
-import { Dropdown } from 'react-bootstrap';
+import React, { Component } from 'react';
+import moment, { calendarFormat, RFC_2822 } from 'moment';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import DropdownButton from 'react-bootstrap/DropdownButton';
+import Dropdown from 'react-bootstrap/Dropdown'
+import { Multiselect } from 'multiselect-react-dropdown';
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import SelectSearch from 'react-select-search';
+import { Typeahead } from 'react-bootstrap-typeahead';
+import plus from '../../images/plus.png'
+import minus from '../../images/minus.png'
+
+import Template from './DoctorVisitFormTemplate';
+import Header from '../common/Header'
+import Footer from '../common/Footer'
+class DoctorVisitForm {
+  constructor() {
+
+    this.state = {
+      businessAreaId: '',
+      doctorId: '',
+      visitedWith: new Array(),
+      lastVisitedDate: '',
+      productDetails: new Array(),
+      physicianSample: new Array(),
+      lbl: '',
+      gift: new Array(),
+      remarks: '',
+      formCount: 1
+
+    }
+  }
+
+}
+class DoctorVisits extends Component {
 
 
-class DoctorVisit extends Component {
+  constructor() {
+    super();
+    this.state = {
+      selectedDate: moment(),
+      doctorVisitFormList: [new DoctorVisitForm()],
+      noOfForms: 0,
+      date: new Date()
 
-    constructor(){
-        super();
-        this.state={
-          selectedDate:moment(),
-          location: "default business area location",
-          doctorName: " drop down of all doctors in that location",
-          visitedWith: "drop down of the employees",
-          lastVisitedDate: "make a backend call",
-          productDetails : "array of the products",
-          physicianSample:"Array of the productSample",
-          lbl: true,
-          gift: "array of the gifts",
-          remarks: "comments added for that doctor visit"
-        }
-      }
-      onSelect=(e)=>{
-        this.setState({selectedDate:e})
-      }
+    }
+    this.handleDateChange = this.handleDateChange.bind(this)
+    this.changeSampleName = this.changeSampleName.bind(this)
+    this.singleSelections = this.singleSelections.bind(this)
+    this.redirectToHome = this.redirectToHome.bind(this)
+    this.addForms = this.addForms.bind(this)
+  }
 
-    render(){
-      return(
-          <form name='doctor visit form'>
-        <div>
-            <div className="App">
-            <h3>Add Doctor visit</h3>
-            <p> The date you've selected is: {this.state.selectedDate.format('YYYY-MM-DD')} </p>
-             <Calendar date={moment()} onSelect={this.onSelect} />
-            <label>Location:
-              <select name='location' id='businessAreaLocation'>
-                <option key="">select</option>{/* 
-                {countries.map(country => (
-            <option key={country}>{country}</option>
-          ))} */}
-              </select>
-            </label> <br/>
+  componentDidMount() {
 
-            <lable  >
-            Doctor: 
-            <select name='doctorName1' id='doctorName1'>
-                <option key="">select</option>{/* 
-                {countries.map(country => (
-            <option key={country}>{country}</option>
-          ))} */}
-              </select>
-            </lable><br/>
+  }
 
+  onSelect = (e) => {
+    this.setState({ selectedDate: e })
+  }
 
-            <lable  >
-              Visited With: 
-            <ReactMultiSelectCheckboxes name='visitedWith1' id='visitedWith1'
-              options={[{label: "All", value: "*"}, {label: "one", value: "1"}]}
-              //value={selectedOptions}
-             // onChange={onChange}
-              //setState={setSelectedOptions}
-            />
-            </lable><br/>
+  changeSampleName(e) {
+    alert("changeSampleName: " + e)
+  }
+
+  singleSelections(e) {
+    alert("singleSelections: " + e)
+
+  }
+
+  redirectToHome() {
+    this.props.history.push('/home')
+  }
+
+  handleDateChange(e) {
+    this.setState({ date: e })
+  }
+
+  addForms() {
+    {
+      var list = [...this.state.doctorVisitFormList];
+      console.log("list size:" + list.length)
+      list.push(new DoctorVisitForm());
+      console.log('form size before: ' + this.state.doctorVisitFormList.length)
+      this.setState({ doctorVisitFormList: list });
+      console.log('form size after: ' + this.state.doctorVisitFormList.length)
+    }
+
+  }
 
 
+  render() {
 
-            <lable  >
-            Last Visited Date: 
-            <input name='lvd1' id= 'lvd1' readonly/>
-            </lable><br/>
+    let formList = null;
+    formList = (
+      <div>
 
-
-
-            <lable  >
-            Products: 
-            <ReactMultiSelectCheckboxes name='productDetails1' id='productDetails1'
-              options={[{label: "All", value: "*"}, {label: "one", value: "1"}]} />
-            </lable><br/>
-
-            <lable name='physicianSample1' id='physicianSample1' >
-
-            <input name='product1' id= 'product1' placeholder='input product' /> 
-            <input name='productQ1' id= 'productQ1' placeholder='input quantity' /> 
-            </lable><br/>
-
-            
-            <lable  >
-            LBL: 
-            <input type = 'radio' name='LBL1value' id= 'LBL1value'  value='Yes' required/>
-            <input type = 'radio' name='LBL1value' id= 'LBL2value'  value='No' required/>
-            </lable><br/>
-
-            
-            <lable >
-            Gift: 
-            <ReactMultiSelectCheckboxes  name='gift1' id='gift1'
-              options={[{label: "All", value: "*"}, {label: "one", value: "1"}]}
-              //value={selectedOptions}
-             // onChange={onChange}
-              //setState={setSelectedOptions}
-            />
-            </lable><br/>
+        {this.state.doctorVisitFormList.map((form, index) => {
+          //   {this.setState({noOfForms: this.state.noOfForms+1})}
+          return <Template id={index} size={this.state.doctorVisitFormList.length} />
 
 
-            
-            <lable  >
-            Remarks: 
-            <input name='remarks1' id='remarks1' />
-            </lable><br/>
-        </div>
+        })}
+
 
       </div>
-      </form>
-      )
-      
-    }
+
+
+    );
+
+    return (
+
+      <div >
+
+        <Header {...this.props} />
+
+        <h2 style={{ textAlign: 'center' }}>Add Doctor Visits</h2>
+        <br />
+        <div class="form-group">
+
+          <div class="col-sm-6  col-md-6 col-lg-6" style={{ display: 'inline-block' }}>
+            <label class="col-sm-3  col-md-3 col-lg-3 control-label" style={{ width: "50%", paddingLeft: "0%" }}>Select Date</label>
+            <DatePicker class="col-sm-3  col-md-3 col-lg-3" id='DCRDate' selected={this.state.date} style={{ width: "50%" }} onChange={this.handleDateChange} />
+          </div>
+        </div>
+
+        <br />
+
+
+        {formList}
+
+
+
+        <div class="form-group">
+          <div class="col-sm-offset-2 col-sm-10">
+            <button type="submit" class="btn btn-default btn-primary custom-btn " onClick={this.addForms}>Add More </button>
+          </div>
+        </div>
+        <br />
+        <div class="form-group">
+          <div class="col-sm-offset-2 col-sm-10">
+            <button type="submit" class="btn btn-default btn-primary custom-btn">Submit</button>
+          </div>
+        </div>
+        <br />
+        <br />
+
+
+
+        <Footer />
+
+
+      </div>
+
+    )
+
+  }
 }
 
-export default DoctorVisit;
+export default DoctorVisits;
