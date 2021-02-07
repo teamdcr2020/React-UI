@@ -12,6 +12,8 @@ import plus from '../../images/plus.png'
 import minus from '../../images/minus.png'
 import patenLogo from '../../images/company_logo.png';
 import * as commonConstant from '../common/CommonConstant'
+import { PostData } from '../../services/PostData';
+import PhysicianSample from './PhysicianSample'
 
 export class Template extends Component {
   constructor() {
@@ -24,28 +26,60 @@ export class Template extends Component {
       userHeadquarter: '',
       selectedHeadquarter: { id: 0, name: 'Headquarter' },
       locationList: [],
-      userLocation:'',
-      selectedLocation:{id:0, name:'Location'}
+      userLocation: '',
+      selectedLocation: { id: 0, name: 'Location' },
+      doctorList: [],
+      userList: [],
+      productList: [],
+      giftsList: [],
+      locationLoading: false,
+      doctorLoading: false,
+      PhysicianSamples: []
     }
     this.handleHeadquarterSelection = this.handleHeadquarterSelection.bind(this)
-    this.getLocationMapFromSession = this.getLocationMapFromSession.bind(this)
+    this.getLocationList = this.getLocationList.bind(this)
     this.handleLocationSelection = this.handleLocationSelection.bind(this)
+    this.populateLocationItem = this.populateLocationItem.bind(this);
+    this.addPhysicianSamples = this.addPhysicianSamples.bind(this)
+
 
   }
 
   componentDidMount() {
-    var item = JSON.parse(sessionStorage.getItem(commonConstant.GET_ALL_HEADQUARTER))
-    var headquarterInSession = sessionStorage.getItem('headquarterId');
-    this.setState({ userHeadquarter: headquarterInSession })
-    this.setState({ headquarterList: item });
-    // console.log(JSON.stringify(this.state.selectedHeadquarter));
-    this.getLocationMapFromSession();
+    let item = JSON.parse(sessionStorage.getItem(commonConstant.GET_ALL_HEADQUARTER))
+    let headquarterIdInSession = sessionStorage.getItem('headquarterId');
+    let userHeadquarterTemp = '';
+
+
+    this.setState({ headquarterList: item },
+      () => {
+        item.map(
+          headquarter => {
+            console.log('matching: ' + headquarter.id + ": " + headquarterIdInSession + " -- " + (headquarter.id == sessionStorage.getItem("headquarterId")))
+            if (headquarter.id == headquarterIdInSession) {
+              console.log("this happened 1")
+              userHeadquarterTemp = { id: headquarter.id, name: headquarter.name };
+              sessionStorage.setItem('defaultUserHeadquarter', userHeadquarterTemp);
+              this.setState({ userHeadquarter: userHeadquarterTemp })
+              this.setState({ selectedHeadquarter: userHeadquarterTemp })
+            }
+          })
+      }
+    );
+    this.setState({ productList: JSON.parse(sessionStorage.getItem(commonConstant.GET_ALL_PRODUCT)) })
+
+    this.setState({ giftsList: JSON.parse(sessionStorage.getItem(commonConstant.GET_ALL_GIFT)) })
+    this.setState({ userList: JSON.parse(sessionStorage.getItem(commonConstant.GET_ALL_USER)) })
+
+    //console.log(JSON.stringify(this.state.doctorList));
+    this.getLocationList(JSON.parse(sessionStorage.getItem(commonConstant.GET_DOCTORS_SHOPS_BY_HEADQUARTER_ID)));
+    this.addPhysicianSamples()
 
   }
 
 
-  getLocationMapFromSession() {
-    var totalList = JSON.parse(sessionStorage.getItem(commonConstant.GET_DOCTORS_SHOPS_BY_HEADQUARTER_ID));
+  getLocationList(totalList) {
+
     //alert(typeof(totalList))
     let businessAreaList = [];
     let uniqueList = []
@@ -69,42 +103,140 @@ export class Template extends Component {
 
   handleHeadquarterSelection(e) {
 
-    var selectedHeadQuarterName = [];
+    var selectedHeadQuarterTemp = [];
+    console.log("headquarter selected: " + e)
 
-    for(var i=0; i<this.state.headquarterList.length; i++)
-    {
-     // alert(this.state.headquarterList[i].id==e)
-      if(this.state.headquarterList[i].id==e)
-      {
-        selectedHeadQuarterName = this.state.headquarterList[i];
+    for (var i = 0; i < this.state.headquarterList.length; i++) {
+      // alert(this.state.headquarterList[i].id==e)
+      if (this.state.headquarterList[i].id == e) {
+        selectedHeadQuarterTemp = this.state.headquarterList[i];
         break;
       }
     }
-  //  alert(JSON.stringify(selectedHeadQuarterName));
-    this.setState({ selectedHeadquarter: selectedHeadQuarterName },()=> alert(JSON.stringify(this.state.selectedHeadquarter))) 
+    if (this.state.selectedHeadquarter.id != selectedHeadQuarterTemp.id) {
+      console.log("headQuarter changed")
+      this.setState({ selectedHeadquarter: selectedHeadQuarterTemp, locationLoading: true, doctorLoading: true });
+
+      let accessToken = JSON.parse(sessionStorage.getItem('accessToken'));
+      let operation = commonConstant.GET_DOCTORS_SHOPS_BY_HEADQUARTER_ID;
+      let payload = { id: selectedHeadQuarterTemp.id, operation, authorization: 'bearer ' + accessToken }
+
+      PostData(operation, payload, commonConstant.controllerURL).then(
+        (result) => {
+          if (result.data) {
+            this.setState({ selectedLocation: { id: 0, name: "Location" }, doctorList: [] })
+            console.log('data for new Headquarter id: ' + selectedHeadQuarterTemp.id + '--' + result.data.data)
+            let locationMapTemp = (result.data.data);
+            console.log('LocaitonMapTem:' + locationMapTemp)
+            this.getLocationList(locationMapTemp)
+            this.populateLocationItem();
+
+
+          }
+          else {
+
+          }
+
+        }).catch(error => console.log(JSON.stringify(error)));
+
+    }
+
+
+
   }
 
   handleLocationSelection(e) {
 
     var selectedLocationName = {};
-    
-    for(var i=0; i < this.state.locationList.length; i++)
-    {
-     // alert(this.state.headquarterList[i].id==e)
-      if(this.state.locationList[i].id==e)
-      {
+
+    for (var i = 0; i < this.state.locationList.length; i++) {
+      // alert(this.state.headquarterList[i].id==e)
+      if (this.state.locationList[i].id == e) {
         selectedLocationName = this.state.locationList[i];
+
         break;
       }
     }
-  //  alert(JSON.stringify(selectedHeadQuarterName));
-    this.setState({ selectedLocation: selectedLocationName },()=> alert(JSON.stringify(this.state.selectedLocation))) 
+    //  alert(JSON.stringify(selectedHeadQuarterName));
+    this.setState({ selectedLocation: selectedLocationName }, () => { console.log(JSON.stringify(this.state.selectedLocation)) })
+    let list = [];
+    JSON.parse(sessionStorage.getItem(commonConstant.GET_DOCTORS_SHOPS_BY_HEADQUARTER_ID)).map(
+      (entity) => {
+
+        //console.log('entity scanned: '+entity.entityName+" - "+entity.businessareaId+" - "+selectedLocationName.id +' condition: '+ selectedLocationName.id === entity.businessareaId)
+        //console.log('selection id: ' + selectedLocationName.id + "  doctor's business area: " + entity.businessareaId);
+        if (entity.entityType === 'Doctor' && selectedLocationName.id === entity.businessareaId) {
+          list.push({ name: entity.entityName, id: entity.entityId });
+          //console.log('pushed:'+ JSON.stringify({ name: entity.entityName, id: entity.entityId, entityBizArea:  entity.businessareaId, locationid: selectedLocationName.id}))
+        }
+
+      })
+
+
+    this.setState({
+      doctorList: list
+    },
+
+      () => { console.log('doctorList: ' + JSON.stringify(this.state.doctorList)) });
+    console.log(JSON.stringify('Final List: ' + JSON.stringify(list)))
   }
+
+  populateLocationItem(list) {
+    let locationItems = null;
+    if (list) {
+      locationItems = (
+        <DropdownButton
+          alignRight
+          title={this.state.selectedLocation.name}
+          id="dropdown-menu-align-right"
+          class="col-sm-10 control-label w-100 btn-primary custom-btn "
+
+          onSelect={this.handleLocationSelection}
+        >
+
+          {list.map((location, index) => { return <Dropdown.Item eventKey={location.id}>{location.name}</Dropdown.Item> })}
+
+        </DropdownButton>
+
+      )
+    }
+    else {
+      console.log("locaiton population not avialable")
+      locationItems = (
+        <DropdownButton
+          alignRight
+          title='No Locations Available'
+          id="dropdown-menu-align-right"
+          class="col-sm-10 control-label w-100 btn-primary custom-btn "
+        // onSelect={this.handleLocationSelection}
+        >
+
+        </DropdownButton>
+
+      )
+      console.log("locaiton population not avialable")
+    }
+
+    return locationItems;
+  }
+
+  addPhysicianSamples() {
+
+    let samples = this.state.PhysicianSamples;
+    console.log(samples.length + ": " + JSON.stringify(samples))
+    samples.push(new PhysicianSample());
+    this.setState({ physicianSamples: samples })
+  }
+
 
   render() {
 
     let headquarterItems = null;
-    let locationItems = null;
+
+    let doctorItems = null;
+    let userItems = null;
+    let productItems = null;
+    let giftsList = null;
     headquarterItems = (
       <DropdownButton
         alignRight
@@ -118,21 +250,21 @@ export class Template extends Component {
 
       </DropdownButton>
     )
-    locationItems = (
-      <DropdownButton
-        alignRight
-        title={this.state.selectedLocation.name}
-        id="dropdown-menu-align-right"
-        class="col-sm-10 control-label w-100 btn-primary custom-btn "
 
-        onSelect={this.handleLocationSelection}
-      >
+    let samples = null;
+    samples = (
+      <div>
+        {this.state.PhysicianSamples.map((form, index) => {
+          //   {this.setState({noOfForms: this.state.noOfForms+1})}
+          return <PhysicianSample id={index} size={this.state.PhysicianSamples.length} />
+        })}
+      </div>
+    );
 
-        {this.state.locationList.map((location, index) => { return <Dropdown.Item eventKey={location.id}>{location.name}</Dropdown.Item> })}
 
-      </DropdownButton>
+    giftsList = (this.state.giftsList.map((gift) => { return { name: gift.name, id: gift.id } }))
+    //console.log(typeof (giftsList) + ' gift list: ' + JSON.stringify(giftsList))
 
-    )
 
     return (
 
@@ -151,9 +283,11 @@ export class Template extends Component {
         <div class="form-group">
           <label class="col-sm-2 control-label">Location</label>
           <div class="col-sm-10">
-              {locationItems}
+            {this.populateLocationItem(this.state.locationList)}
           </div>
         </div>
+
+
 
         <div class="form-group">
           <label htmlfor="Doctor1" class="col-sm-2 control-label">Doctor</label>
@@ -163,7 +297,7 @@ export class Template extends Component {
               id="basic-typeahead-single"
               labelKey="name"
               //onChange={this.changeSampleName}
-              options={[{ name: 'Srigar', id: 1 }, { name: 'Sam', id: 2 }, { name: 'Sam1', id: 3 }, { name: 'Sam2', id: 4 }, { name: 'Sam3', id: 5 }, { name: 'Sam4', id: 6 }, { name: 'Sam5', id: 7 }]}
+              options={this.state.doctorList}
               placeholder="Choose Doctor"
             //selected={[{ name: 'Srigar', id: 1 }]}
             />
@@ -176,15 +310,12 @@ export class Template extends Component {
           </div>
         </div>
 
-
-
-
         <div class="form-group">
           <label htmlfor="visitedWith1" class="col-sm-2 control-label">Visited with</label>
           <div class="col-sm-offset-2 col-sm-10">
             <div class="dropdown">
               <Multiselect
-                options={[{ name: 'Srigar', id: 1 }, { name: 'Sam', id: 2 }, { name: 'Sam1', id: 3 }, { name: 'Sam2', id: 4 }, { name: 'Sam3', id: 5 }, { name: 'Sam4', id: 6 }, { name: 'Sam5', id: 7 }]} // Options to display in the dropdown
+                options={this.state.userList} // Options to display in the dropdown
                 selectedValues={this.state.selectedValue} // Preselected value to persist in dropdown
                 onSelect={this.onSelect} // Function will trigger on select event
                 onRemove={this.onRemove} // Function will trigger on remove event
@@ -198,7 +329,7 @@ export class Template extends Component {
           <div class="col-sm-offset-2 col-sm-10">
             <div class="dropdown">
               <Multiselect
-                options={[{ name: 'Srigar', id: 1 }, { name: 'Sam', id: 2 }, { name: 'Sam1', id: 3 }, { name: 'Sam2', id: 4 }, { name: 'Sam3', id: 5 }, { name: 'Sam4', id: 6 }, { name: 'Sam5', id: 7 }, { name: 'Sam14', id: 16 }, { name: 'Sam15', id: 17 }]} // Options to display in the dropdown
+                options={this.state.productList} // Options to display in the dropdown
                 selectedValues={this.state.selectedValue} // Preselected value to persist in dropdown
                 onSelect={this.onSelect} // Function will trigger on select event
                 onRemove={this.onRemove} // Function will trigger on remove event
@@ -208,26 +339,7 @@ export class Template extends Component {
           </div>
         </div>
 
-        <div class="form-group">
-          <label class="col-sm-2 control-label">Physician Sample</label>
-          <div class="col-sm-offset-2 col-sm-5" >
-            <Typeahead
-              style={{ width: "45%", display: 'inline-block' }}
-              id="basic-typeahead-single"
-              labelKey="name"
-              //onChange={this.changeSampleName}
-              options={[{ name: 'Srigar', id: 1 }, { name: 'Sam', id: 2 }, { name: 'Sam1', id: 3 }, { name: 'Sam2', id: 4 }, { name: 'Sam3', id: 5 }, { name: 'Sam4', id: 6 }, { name: 'Sam5', id: 7 }]}
-              placeholder="Choose Product"
-            //selected={[{ name: 'Srigar', id: 1 }]}
-            />
-            <span >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
-            <img src={plus} style={{ height: "10%", width: "10%" }} rounded /> <span >&nbsp;</span>
-            <input type="text" style={{ width: "15%", textAlign: "center" }} name="quantity" placeholder="0" /> <span >&nbsp;</span>
-            <img src={minus} rounded style={{ height: "10%", width: "10%" }} />
 
-
-          </div>
-        </div>
 
         <div class="form-group">
           <div class="col-sm-offset-2 col-sm-12 control-label">
@@ -237,12 +349,19 @@ export class Template extends Component {
           </div>
         </div>
 
+        <div>
+          <label class="col-sm-2 control-label">Physician Sample</label>
+          {samples}
+          <p onClick={this.addPhysicianSamples}>Add more</p>
+        </div>
+        <br />
+
         <div class="form-group">
           <label htmlfor="GiftDetails1" class="col-sm-2 control-label">Gift Details</label>
           <div class="col-sm-offset-2 col-sm-10">
             <div class="dropdown">
               <Multiselect
-                options={[{ name: 'Srigar', id: 1 }, { name: 'Sam', id: 2 }, { name: 'Sam1', id: 3 }, { name: 'Sam2', id: 4 }, { name: 'Sam3', id: 5 }, { name: 'Sam4', id: 6 }, { name: 'Sam5', id: 7 }]} // Options to display in the dropdown
+                options={giftsList} // Options to display in the dropdown
                 selectedValues={this.state.selectedValue} // Preselected value to persist in dropdown
                 onSelect={this.onSelect} // Function will trigger on select event
                 onRemove={this.onRemove} // Function will trigger on remove event

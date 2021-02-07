@@ -6,8 +6,10 @@ import { TextField } from '@material-ui/core';
 import styled from "styled-components";
 import patenLogo from '../../images/company_logo.png';
 import {BeatLoader } from 'react-spinners'
+import LoadingOverlay from 'react-loading-overlay'
 import jwt_decode from 'jwt-decode'
 import * as commonConstant from '../common/CommonConstant'
+
 
 const LoginToAccount = styled.h1`
   width: 100%;
@@ -107,7 +109,7 @@ class Login extends Component{
 
         return(
             <>
-                <div className="login_form" style={{height:"100%"}}>
+                <div className="login_form" style={{height:"100%"}} className = {this.state.awaitingResponse ? 'parentDisable' :'' }>
                 <div id="formContent">
                 <div className="first">
                 <img src={patenLogo} class="oval" alt="Paten Biotech logo"/>    
@@ -117,10 +119,12 @@ class Login extends Component{
                     <input type="text" id="password-field"  className="one1" label="Password" name="password" onChange={this.onChange} type="password"  placeholder="password"   /> <br/>
                     {/* <input type = "text" name= "username" onChange={this.onChange} />
                     <input type="password" name ="password" placeholder="password" onChange={this.onChange} /> */}
-                    <input type="submit" className="fourth two" value="login" onClick={this.login} />
+                    <input type="submit" className="fourth two" value="login" onClick={this.login} disabled={this.state.awaitingResponse}/>
                     {this.state.loginFailed &&  <div style = {{color: "red"}}>Login Failed! Invalid Username or password</div>}
                     {this.state.errorOccured &&  <div style = {{color: "red"}}>Something went wrong, Please contact support.</div>}
-                    {this.state.awaitingResponse && <BeatLoader size='24px' color='blue' loading/>}
+                    <LoadingOverlay className='overlay-box' active={this.state.awaitingResponse} spinner={<BeatLoader size='24px' color='blue' loading/>} />
+                    
+                        
                     <a className="three" href="#">Forgot Password?</a>
                 </div>
                 </div>
