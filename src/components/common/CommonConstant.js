@@ -79,3 +79,5 @@ export const STATUS_APPROVED = 1;
 export const STATUS_UNAPPROVED = 2;
 export const STATUS_DELETED = 5;
 export const REQUEST_TEMPLATE = {operation:'', authorization:'Bearer '}
+export const USER_DEFAULT_HEADQUARTER = 'defaultHeadquarter';
+export const USER_DEFAULT_HEADQUARTER_ID = 'defaultHeadquarterId';

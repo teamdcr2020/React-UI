@@ -33,7 +33,9 @@ export function PostData(type, userData, baseURL){
     console.log("sending operation header as +"+headers.operation);
 
   return axios.post(baseURL, JSON.stringify(userData),{ headers})
-   .then(response =>{ console.log("response returned from backend: "+JSON.stringify(response)); return response;})
+   .then(response =>{ 
+       //console.log("response returned from backend: "+JSON.stringify(response)); 
+        return response;})
    .catch(error => {
        //this.setState({ errorMessage: error.message });
        console.error('There was an error!', error);

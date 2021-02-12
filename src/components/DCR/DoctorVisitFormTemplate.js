@@ -41,42 +41,56 @@ export class Template extends Component {
     this.handleLocationSelection = this.handleLocationSelection.bind(this)
     this.populateLocationItem = this.populateLocationItem.bind(this);
     this.addPhysicianSamples = this.addPhysicianSamples.bind(this)
-
+    this.populateData = this.populateData.bind(this);
 
   }
 
   componentDidMount() {
     let item = JSON.parse(sessionStorage.getItem(commonConstant.GET_ALL_HEADQUARTER))
-    let headquarterIdInSession = sessionStorage.getItem('headquarterId');
-    let userHeadquarterTemp = '';
-
-
-    this.setState({ headquarterList: item },
-      () => {
-        item.map(
-          headquarter => {
-            console.log('matching: ' + headquarter.id + ": " + headquarterIdInSession + " -- " + (headquarter.id == sessionStorage.getItem("headquarterId")))
-            if (headquarter.id == headquarterIdInSession) {
-              console.log("this happened 1")
-              userHeadquarterTemp = { id: headquarter.id, name: headquarter.name };
-              sessionStorage.setItem('defaultUserHeadquarter', userHeadquarterTemp);
-              this.setState({ userHeadquarter: userHeadquarterTemp })
-              this.setState({ selectedHeadquarter: userHeadquarterTemp })
-            }
-          })
-      }
-    );
-    this.setState({ productList: JSON.parse(sessionStorage.getItem(commonConstant.GET_ALL_PRODUCT)) })
-
-    this.setState({ giftsList: JSON.parse(sessionStorage.getItem(commonConstant.GET_ALL_GIFT)) })
-    this.setState({ userList: JSON.parse(sessionStorage.getItem(commonConstant.GET_ALL_USER)) })
-
-    //console.log(JSON.stringify(this.state.doctorList));
-    this.getLocationList(JSON.parse(sessionStorage.getItem(commonConstant.GET_DOCTORS_SHOPS_BY_HEADQUARTER_ID)));
-    this.addPhysicianSamples()
-
+    
+    if(item == null )
+    {
+    setTimeout(() => {
+      this.populateData(item);
+    
+    }, 4000);
+  }
+  else
+    this.populateData(item)
+    
   }
 
+  populateData(item )
+  {
+    item = JSON.parse(sessionStorage.getItem(commonConstant.GET_ALL_HEADQUARTER))
+      let headquarterIdInSession = sessionStorage.getItem(commonConstant.USER_DEFAULT_HEADQUARTER_ID);
+      let userHeadquarterTemp = '';
+  
+  
+      this.setState({ headquarterList: item },
+        () => {
+        item != null &&  item.map(
+            headquarter => {
+              console.log('matching: ' + headquarter.id + ": " + headquarterIdInSession + " -- " + (headquarter.id == sessionStorage.getItem("headquarterId")))
+              if (headquarter.id == headquarterIdInSession) {
+                console.log("this happened 1")
+                userHeadquarterTemp = { id: headquarter.id, name: headquarter.name };
+                sessionStorage.setItem('defaultUserHeadquarter', JSON.stringify(userHeadquarterTemp));
+                this.setState({ userHeadquarter: userHeadquarterTemp })
+                this.setState({ selectedHeadquarter: userHeadquarterTemp })
+              }
+            })
+        }
+      );
+      this.setState({ productList: JSON.parse(sessionStorage.getItem(commonConstant.GET_ALL_PRODUCT)) })
+  
+      this.setState({ giftsList: JSON.parse(sessionStorage.getItem(commonConstant.GET_ALL_GIFT)) })
+      this.setState({ userList: JSON.parse(sessionStorage.getItem(commonConstant.GET_ALL_USER)) }, ()=>console.log("Userlist: -- "+JSON.stringify(this.state.userList)))
+  
+      //console.log(JSON.stringify(this.state.userList));
+      this.getLocationList(JSON.parse(sessionStorage.getItem(commonConstant.GET_DOCTORS_SHOPS_BY_HEADQUARTER_ID)));
+      this.addPhysicianSamples()
+  }
 
   getLocationList(totalList) {
 
@@ -84,7 +98,7 @@ export class Template extends Component {
     let businessAreaList = [];
     let uniqueList = []
 
-    for (var i = 0; i < totalList.length; i++) {
+    for (var i = 0; totalList != null &&  i < totalList.length; i++) {
       var found = false;
       for (var j = 0; j < businessAreaList.length; j++) {
         if (businessAreaList[j].id === totalList[i].businessareaId) {
@@ -223,7 +237,7 @@ export class Template extends Component {
   addPhysicianSamples() {
 
     let samples = this.state.PhysicianSamples;
-    console.log(samples.length + ": " + JSON.stringify(samples))
+  //  console.log(samples.length + ": " + JSON.stringify(samples))
     samples.push(new PhysicianSample());
     this.setState({ physicianSamples: samples })
   }
@@ -246,7 +260,7 @@ export class Template extends Component {
         style={{ backgroundColor: '#024B65' }}
         onSelect={this.handleHeadquarterSelection}
       >
-        {this.state.headquarterList.map((headquarter, index) => { return <Dropdown.Item eventKey={headquarter.id}>{headquarter.name}</Dropdown.Item> })}
+        {this.state.headquarterList != null && this.state.headquarterList.map((headquarter, index) => { return <Dropdown.Item eventKey={headquarter.id}>{headquarter.name}</Dropdown.Item> })}
 
       </DropdownButton>
     )
@@ -256,7 +270,7 @@ export class Template extends Component {
       <div>
         {this.state.PhysicianSamples.map((form, index) => {
           //   {this.setState({noOfForms: this.state.noOfForms+1})}
-          return <PhysicianSample id={index} size={this.state.PhysicianSamples.length} />
+          return <PhysicianSample id={index} key={index} size={this.state.PhysicianSamples.length} />
         })}
       </div>
     );

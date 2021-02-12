@@ -28,7 +28,7 @@ class Home extends Component {
     }
 
 
-    componentWillMount() {
+    componentDidMount() {
 
         // this.saveDatatoSession(commonConstant.controllerURL, commonConstant.GET_ALL_SHOP);
 
@@ -39,24 +39,24 @@ class Home extends Component {
         let userprofileData = JSON.parse(sessionStorage.getItem('userData'))
         let headquarterId = '';
 
-        if (userprofileData && userprofileData.userProfile && userprofileData.userProfile.headquarterId) {
-            sessionStorage.setItem('headquarterId', JSON.stringify(userprofileData.userProfile.headquarterId))
-            headquarterId = userprofileData.userProfile.headquarterId
+        // if (userprofileData && userprofileData.userProfile && userprofileData.userProfile.headquarterId) {
+        //     sessionStorage.setItem('headquarterId', JSON.stringify(userprofileData.userProfile.headquarterId))
+        //     headquarterId = userprofileData.userProfile.headquarterId
+        // }
 
-        }
-
-
-
-
-
-        this.saveDatatoSession(commonConstant.controllerURL, this.state, commonConstant.GET_ALL_GIFT);
-
-        this.saveDatatoSession(commonConstant.controllerURL, this.state, commonConstant.GET_ALL_PRODUCT);
-
-        this.saveDatatoSession(commonConstant.controllerURL, this.state, commonConstant.GET_ALL_HEADQUARTER);
-
-        this.saveDatatoSession(commonConstant.controllerURL, this.state, commonConstant.GET_ALL_USER);
-        this.saveDatatoSession(commonConstant.controllerURL, { id: headquarterId }, commonConstant.GET_DOCTORS_SHOPS_BY_HEADQUARTER_ID);
+       let item = JSON.parse(sessionStorage.getItem(commonConstant.GET_ALL_HEADQUARTER))
+        let userHeadquarterTemp = JSON.parse(sessionStorage.getItem(commonConstant.USER_DEFAULT_HEADQUARTER_ID))
+        item != null &&  item.map(
+            headquarter => {
+              console.log('matching: ' + headquarter.id + ": " + userHeadquarterTemp + " -- " + (headquarter.id == sessionStorage.getItem("headquarterId")))
+              if (headquarter.id == userHeadquarterTemp) {
+                console.log("this happened 1")
+                userHeadquarterTemp = { id: headquarter.id, name: headquarter.name };
+                sessionStorage.setItem('defaultUserHeadquarter', JSON.stringify(userHeadquarterTemp));
+                this.setState({ userHeadquarter: userHeadquarterTemp })
+                this.setState({ selectedHeadquarter: userHeadquarterTemp })
+              }
+            })
 
 
         //this.saveDatatoSession(commonConstant.controllerURL, commonConstant.GET_ALL_COMPANY);
@@ -106,34 +106,36 @@ class Home extends Component {
 
     navigateToDoctorVisitForm() {
 
-        let flag1 = sessionStorage.getItem(commonConstant.GET_DOCTORS_SHOPS_BY_HEADQUARTER_ID);
-        let flag2 = sessionStorage.getItem(commonConstant.GET_ALL_HEADQUARTER);
-        let flag3 = sessionStorage.getItem(commonConstant.GET_ALL_USER);
-        //let flag4 = sessionStorage.getItem(commonConstant.GET_DOCTORS_SHOPS_BY_HEADQUARTER_ID);
-        //let flag5 = sessionStorage.getItem(commonConstant.GET_DOCTORS_SHOPS_BY_HEADQUARTER_ID);
-        console.log(flag1 + ' - ' + flag2 + ' - ' + flag3)
-        if (flag1 && flag2 && flag3) {
-            this.setState({ awaitingResponse: true })
-            setTimeout(() => {
-                console.log('timeout executing 1')
-                this.setState({ awaitingResponse: false })
-                this.props.history.push('/doctorVisitForm');
+        this.props.history.push('/doctorVisitForm');
+
+        // let flag1 = sessionStorage.getItem(commonConstant.GET_DOCTORS_SHOPS_BY_HEADQUARTER_ID);
+        // let flag2 = sessionStorage.getItem(commonConstant.GET_ALL_HEADQUARTER);
+        // let flag3 = sessionStorage.getItem(commonConstant.GET_ALL_USER);
+        // //let flag4 = sessionStorage.getItem(commonConstant.GET_DOCTORS_SHOPS_BY_HEADQUARTER_ID);
+        // //let flag5 = sessionStorage.getItem(commonConstant.GET_DOCTORS_SHOPS_BY_HEADQUARTER_ID);
+        // console.log(flag1 + ' - ' + flag2 + ' - ' + flag3)
+        // if (flag1 && flag2 && flag3) {
+        //     this.setState({ awaitingResponse: true })
+        //     setTimeout(() => {
+        //         console.log('timeout executing 1')
+        //         this.setState({ awaitingResponse: false })
+        //         this.props.history.push('/doctorVisitForm');
                 
-            }, 500);
+        //     }, 500);
             
             
 
-        }
-        else {
+        // }
+        // else {
 
-            this.setState({ awaitingResponse: true })
-            console.log('timeout executing 2')
-            setTimeout(() => {
-                this.setState({ awaitingResponse: false })
-            }, 3000);
+        //     this.setState({ awaitingResponse: true })
+        //     console.log('timeout executing 2')
+        //     setTimeout(() => {
+        //         this.setState({ awaitingResponse: false })
+        //     }, 3000);
 
-        }
-        console.log('waiting for data load : ' + this.i)
+        // }
+        // console.log('waiting for data load : ' + this.i)
 
 
     }

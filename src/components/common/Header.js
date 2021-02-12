@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import patenLogo from '../../images/company_logo.png';
-
+import * as commonConstant from '../common/CommonConstant'
 import { Link } from 'react-router-dom';
 
 class Header extends Component {
@@ -8,7 +8,10 @@ class Header extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            redirect: false
+            redirect: false,
+            name: '',
+            headquarterName: '',
+            employeeId: ''
         }
         this.logout = this.logout.bind(this);
     }
@@ -18,6 +21,35 @@ class Header extends Component {
         sessionStorage.clear();
         this.setState({ redirect: true });
         this.props.history.push('/')
+    }
+
+    componentDidMount() {
+        let userprofileData = JSON.parse(sessionStorage.getItem('userData'))
+        let headquarterId = JSON.parse(sessionStorage.getItem(commonConstant.USER_DEFAULT_HEADQUARTER_ID))
+        let allHeadQuarters = JSON.parse(sessionStorage.getItem(commonConstant.GET_ALL_HEADQUARTER))
+        let name = '';
+        if (userprofileData && userprofileData.userProfile && userprofileData.userProfile.name) 
+            this.setState({name: userprofileData.userProfile.name})
+
+        if (userprofileData && userprofileData.userProfile && userprofileData.userProfile.employeeId) 
+            this.setState({employeeId: userprofileData.userProfile.employeeId})
+
+        if (allHeadQuarters) 
+            {
+                allHeadQuarters.map((headQuarter)=>{
+                    console.log("headQuaRETE:   "+JSON.stringify(headQuarter)+" -- "+headquarterId)
+                    if(headQuarter.id === headquarterId)
+                    {
+                        this.setState({headquarterName: headQuarter.name})
+                        let defHead = {id:headquarterId, name: headQuarter.name};
+                        sessionStorage.setItem(commonConstant.USER_DEFAULT_HEADQUARTER, JSON.stringify(defHead) );
+                    }
+
+                })
+            }
+        
+        
+      
     }
 
     render() {
@@ -50,7 +82,9 @@ class Header extends Component {
                             </ul>
                         </div>
                     </nav>
-                    <h5>Hello {JSON.parse(sessionStorage.getItem('userData')).userProfile.name}</h5>
+                    <h5>Hello, {this.state.name}</h5>
+                    <h6>Employee Id :{this.state.employeeId} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; HQ: {this.state.headquarterName}</h6>
+                    <br />
                 </div>
             </div>
         )
