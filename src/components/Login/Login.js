@@ -102,6 +102,7 @@ class Login extends Component {
 
                 if (result) {
                     if (result.message && result.message.indexOf('401') >= 0) {
+                        this.setState({ awaitingResponse: false });
                         this.setState({ loginFailed: true })
                     }
                     else if (result.data) {

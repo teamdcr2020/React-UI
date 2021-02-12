@@ -1,15 +1,9 @@
 import React, { Component } from 'react';
 import moment, { calendarFormat, RFC_2822 } from 'moment';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import DropdownButton from 'react-bootstrap/DropdownButton';
-import Dropdown from 'react-bootstrap/Dropdown'
-import { Multiselect } from 'multiselect-react-dropdown';
+import { Redirect } from 'react-router-dom';
 import DatePicker, {registerLocale }from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import SelectSearch from 'react-select-search';
-import { Typeahead } from 'react-bootstrap-typeahead';
-import plus from '../../images/plus.png'
-import minus from '../../images/minus.png'
 import { BeatLoader } from 'react-spinners'
 import LoadingOverlay from 'react-loading-overlay'
 import Template from './DoctorVisitFormTemplate';
@@ -131,7 +125,10 @@ class DoctorVisits extends Component {
 
 
   render() {
-
+    
+    if (!sessionStorage.getItem('userData')) {
+      return (<Redirect to={'/'} />)
+  }
     let formList = null;
     formList = (
       <div>

@@ -98,7 +98,7 @@ export class Template extends Component {
     let businessAreaList = [];
     let uniqueList = []
 
-    for (var i = 0; totalList != null &&  i < totalList.length; i++) {
+    for (var i = 0; totalList != null && totalList!= null && i < totalList.length; i++) {
       var found = false;
       for (var j = 0; j < businessAreaList.length; j++) {
         if (businessAreaList[j].id === totalList[i].businessareaId) {
