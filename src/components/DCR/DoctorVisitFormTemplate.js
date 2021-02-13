@@ -82,7 +82,12 @@ export class Template extends Component {
   
       this.setState({ giftsList: JSON.parse(sessionStorage.getItem(commonConstant.GET_ALL_GIFT)) })
       this.setState({ userList: JSON.parse(sessionStorage.getItem(commonConstant.GET_ALL_USER)) }, ()=> this.state.userList.map(user=>{user.name = user.name+' ('+user.designation+')'}))
-  
+      let preSelectedLocation = JSON.parse(sessionStorage.getItem('lastSelectedLocation'));
+      if(preSelectedLocation != null)
+      {
+        this.setState({selectedLocation: preSelectedLocation}, ()=> this.handleLocationSelection(preSelectedLocation.id))
+      }
+      
       //console.log(JSON.stringify(this.state.userList));
       this.getLocationList(JSON.parse(sessionStorage.getItem(commonConstant.GET_DOCTORS_SHOPS_BY_HEADQUARTER_ID)));
       this.addPhysicianSamples()
@@ -157,6 +162,8 @@ export class Template extends Component {
 
     var selectedLocationName = {};
 
+   // console.log('Location list : '+JSON.stringify(this.state.locationList))
+   // console.log('Selected location  : '+JSON.stringify(e))
     for (var i = 0; this.state.locationList!= null && i < this.state.locationList.length; i++) {
       // alert(this.state.headquarterList[i].id==e)
       if (this.state.locationList[i].id == e) {
@@ -166,7 +173,7 @@ export class Template extends Component {
       }
     }
     //  alert(JSON.stringify(selectedHeadQuarterName));
-    this.setState({ selectedLocation: selectedLocationName }, () => { console.log(JSON.stringify(this.state.selectedLocation)) })
+    this.setState({ selectedLocation: selectedLocationName }, () => { sessionStorage.setItem('lastSelectedLocation', JSON.stringify( this.state.selectedLocation)); console.log(JSON.stringify(this.state.selectedLocation)) })
     let list = [];
     JSON.parse(sessionStorage.getItem(commonConstant.GET_DOCTORS_SHOPS_BY_HEADQUARTER_ID)).map(
       (entity) => {

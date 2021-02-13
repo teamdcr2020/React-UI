@@ -147,17 +147,25 @@ class DoctorVisits extends Component {
     if(name != 'undefined' && name.length > 0)
     {
     let findIndex = parseInt(id.substring(8))
-    console.log('index is :'+id.substring(8)+JSON.stringify(name))
+    //console.log('index is :'+id.substring(8)+JSON.stringify(name))
     let inner = document.getElementById('showHide'+findIndex).innerHTML;
     document.getElementById('showHide'+findIndex).innerHTML = (findIndex+1 )+'. Doctor Visit : '+ name[0].name;
     }
   }
 
-  removeTemplate()
+  removeTemplate(index)
   {
-    
+    console.log('removeTemplate called for index: '+JSON.stringify(index))
     let visitList = this.state.doctorVisitFormList;
-    visitList.pop();
+    for(let i=0; i<visitList.length; i++)
+    {
+      if(i===index.index)
+      {
+        visitList.splice(i,1)
+      }
+      
+    }
+
     this.setState({doctorVisitFormList:visitList})
 
   }
@@ -172,7 +180,10 @@ class DoctorVisits extends Component {
 
         {this.state.doctorVisitFormList.map((form, index) => {
           //   {this.setState({noOfForms: this.state.noOfForms+1})}
-          return <div> <br/>  <a    id={'showHide'+index} onClick={()=> this.showHide({index})} className="btn btn-default btn-primary custom-btn" >  {index +1}. Doctor Visit </a>
+          //console.log('index while population of doctor visit template'+index);
+          return <div> <br/> 
+          <button type="submit"  className ="btn btn-default btn-primary custom-btn" style ={{ width: "9%" }} onClick={()=> this.removeTemplate({index})}> X </button> 
+           <a    id={'showHide'+index} onClick={()=> this.showHide({index})} className="btn btn-default btn-primary custom-btn" style ={{ width: "90%" }}  >  {index +1}. Doctor Visit </a>
           <Template id={'template'+index} size={this.state.doctorVisitFormList != null && this.state.doctorVisitFormList.length} showHideName = {this.showHideName} />
           
           </div>
