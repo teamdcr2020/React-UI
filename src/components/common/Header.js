@@ -37,7 +37,7 @@ class Header extends Component {
         if (allHeadQuarters) 
             {
                 allHeadQuarters.map((headQuarter)=>{
-                    console.log("headQuaRETE:   "+JSON.stringify(headQuarter)+" -- "+headquarterId)
+                    //console.log("headQuaRETE:   "+JSON.stringify(headQuarter)+" -- "+headquarterId)
                     if(headQuarter.id === headquarterId)
                     {
                         this.setState({headquarterName: headQuarter.name})

@@ -59,9 +59,9 @@ export class PhysicianSample extends Component {
     render() {
 
         return (
-            <div class="form-group">
+            <div  className ="form-group">
 
-                <div class="col-sm-offset-2 col-sm-5" >
+                <div  className ="col-sm-offset-2 col-sm-5" >
                     <div id='physicianSampleDiv' >
                         <Typeahead
                             style={{ width: "45%", display: 'inline-block' }}

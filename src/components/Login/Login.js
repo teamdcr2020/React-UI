@@ -43,7 +43,7 @@ class Login extends Component {
         this.updateSessionData = this.updateSessionData.bind(this);
     }
 
-    saveDatatoSession(baseURL, payload, operation) {
+    async saveDatatoSession(baseURL, payload, operation) {
 
         //alert("payload before: "+JSON.stringify(payload))
         payload = { ...payload, operation, authorization: 'bearer ' + JSON.parse(sessionStorage.getItem('accessToken')) }
@@ -65,6 +65,13 @@ class Login extends Component {
 
     }
 
+    doRedirect()
+    {
+        this.setState({ awaitingResponse: false });
+        this.setState({ redirect: true });
+        this.props.history.push('/home')
+    }
+
     updateSessionData() {
         const promises = [];
         let userprofileData = JSON.parse(sessionStorage.getItem('userData'))
@@ -80,14 +87,37 @@ class Login extends Component {
         promises.push(this.saveDatatoSession(commonConstant.controllerURL, { id: headquarterId }, commonConstant.GET_DOCTORS_SHOPS_BY_HEADQUARTER_ID));
 
         return Promise.all(promises).then(() => {
+            let totalList = sessionStorage.getItem(commonConstant.GET_DOCTORS_SHOPS_BY_HEADQUARTER_ID);
+            let headquarterList = sessionStorage.getItem(commonConstant.GET_DOCTORS_SHOPS_BY_HEADQUARTER_ID);
             setTimeout(() => {
-                console.log("Promises-----------------------");
-                this.setState({ awaitingResponse: false });
-                this.setState({ redirect: true });
-                this.props.history.push('/home')
+               
+                if(headquarterList == null || totalList == null)
+                {
+                    setTimeout(()=>{
+                        if(headquarterList == null || totalList == null)
+                        {
+                            setTimeout(()=>{
+                                console.log('Login waited third timeout')
+                                this.doRedirect();
+                            }, 5000)
+                        }
+                        else
+                        {
+                            console.log('Login waited second timeout')
+                            this.doRedirect();
+                        }
+                       
+                    }, 4000)
+                }
+                else
+                {
+                    console.log('Login waited first timeout')
+                    this.doRedirect();
+                }
+                
             },
 
-                8000);
+                4000);
         });
 
     }
@@ -111,16 +141,7 @@ class Login extends Component {
                         // sessionStorage.setItem('userData', JSON.stringify(jwt_decode(JSON.parse(result.data.substring(1, result.data.length-1 )).token)))
                         console.log(JSON.stringify(jwt_decode(result.data.token)))
                         sessionStorage.setItem('userData', JSON.stringify(jwt_decode(result.data.token)))
-
-
-                        // Start: Setting values in session
-
-
-                        //this.updateSessionData().then(this.props.history.push('/home'));
-
-
                         this.updateSessionData()
-
                         // End: Setting values in session
 
                     }

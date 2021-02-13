@@ -11,6 +11,7 @@ import Header from '../common/Header'
 import Footer from '../common/Footer'
 import * as commonConstant from '../common/CommonConstant'
 import el from "date-fns/locale/en-IN";
+import Collapse from 'react-bootstrap/Collapse';
 registerLocale("el", el)
 class DoctorVisitForm {
   constructor() {
@@ -27,7 +28,8 @@ class DoctorVisitForm {
       remarks: '',
       formCount: 1,
       userHeadquarter: {},
-      headquarterList: []
+      headquarterList: [],
+      collapseVisit: false
 
     }
   }
@@ -73,7 +75,7 @@ class DoctorVisits extends Component {
     if (flag1 && flag2 && flag3) {
       this.setState({ awaitingResponse: false })
       setTimeout(() => {
-        console.log('timeout executing 1')
+        console.log('timeout executing 1 --')
         this.props.history.push('/doctorVisitForm');
       }, 5000);
 
@@ -114,16 +116,51 @@ class DoctorVisits extends Component {
   addForms() {
     {
       var list = [...this.state.doctorVisitFormList];
-      console.log("list size:" + list.length)
+      //console.log("list size:" + list.length)
+      for(let i=0; i<list.length; i++)
+      {
+        this.showHide({index: i}, true)
+      }
       list.push(new DoctorVisitForm());
-      console.log('form size before: ' + this.state.doctorVisitFormList.length)
+
+      //console.log('form size before: ' + this.state.doctorVisitFormList.length)
       this.setState({ doctorVisitFormList: list });
-      console.log('form size after: ' + this.state.doctorVisitFormList.length)
+      //console.log('form size after: ' + this.state.doctorVisitFormList.length)
     }
 
   }
+  showHide(index, hideFlag) {
+    
+    let templateId = 'template'+index.index;
+    console.log('showhiede for: '+templateId+' -- '+JSON.stringify(index))
+    if(document.getElementById(templateId) != null)
+    {
+    if(document.getElementById(templateId).style.display == "none" && !hideFlag)
+    document.getElementById(templateId).style.display  = "block"
+    else
+    document.getElementById(templateId).style.display = "none";
+    }
+  }
 
+  showHideName(id, name)
+  {
+    if(name != 'undefined' && name.length > 0)
+    {
+    let findIndex = parseInt(id.substring(8))
+    console.log('index is :'+id.substring(8)+JSON.stringify(name))
+    let inner = document.getElementById('showHide'+findIndex).innerHTML;
+    document.getElementById('showHide'+findIndex).innerHTML = (findIndex+1 )+'. Doctor Visit : '+ name[0].name;
+    }
+  }
 
+  removeTemplate()
+  {
+    
+    let visitList = this.state.doctorVisitFormList;
+    visitList.pop();
+    this.setState({doctorVisitFormList:visitList})
+
+  }
   render() {
     
     if (!sessionStorage.getItem('userData')) {
@@ -135,7 +172,11 @@ class DoctorVisits extends Component {
 
         {this.state.doctorVisitFormList.map((form, index) => {
           //   {this.setState({noOfForms: this.state.noOfForms+1})}
-          return <Template id={index} size={this.state.doctorVisitFormList.length} />
+          return <div> <br/>  <a    id={'showHide'+index} onClick={()=> this.showHide({index})} className="btn btn-default btn-primary custom-btn" >  {index +1}. Doctor Visit  </a>
+          <Template id={'template'+index} size={this.state.doctorVisitFormList != null && this.state.doctorVisitFormList.length} showHideName = {this.showHideName} />
+          
+          </div>
+         
 
 
         })}
@@ -159,11 +200,11 @@ class DoctorVisits extends Component {
 
             <h2 style={{ textAlign: 'center' }}>Add Doctor Visits</h2>
             <br />
-            <div class="form-group">
+            <div className ="form-group">
 
-              <div class="col-sm-6  col-md-6 col-lg-6" style={{ display: 'inline-block' }}>
-                <label class="col-sm-3  col-md-3 col-lg-3 control-label" style={{ width: "50%", paddingLeft: "0%" }}>Select Date</label>
-                <DatePicker class="col-sm-3  col-md-3 col-lg-3" id='DCRDate' selected={this.state.date} style={{ width: "50%" }} locale='in' onChange={this.handleDateChange} />
+              <div  className ="col-sm-6  col-md-6 col-lg-6" style={{ display: 'inline-block' }}>
+                <label  className ="col-sm-3  col-md-4 col-lg-4 control-label" style={{ width: "40%", paddingLeft: "0%" }}>Select Date</label>
+                <DatePicker  className ="col-sm-3  col-md-8 col-lg-8" id='DCRDate' selected={this.state.date} style={{ width: "60%" }} locale='in' onChange={this.handleDateChange} />
               </div>
             </div>
 
@@ -174,15 +215,16 @@ class DoctorVisits extends Component {
 
 
 
-            <div class="form-group">
-              <div class="col-sm-offset-2 col-sm-10">
-                <button type="submit" class="btn btn-default btn-primary custom-btn " onClick={this.addForms}>Add More </button>
+            <div  className ="form-group">
+            <br/><br/>
+              <div  className ="col-sm-offset-2 col-sm-10">
+              <button type="submit"  className ="btn btn-default btn-primary custom-btn" style ={{ width: "49%" }} onClick={()=> this.removeTemplate()}> Remove </button>  <button type="submit" style ={{ width: "49%" }} className ="btn btn-default btn-primary custom-btn " onClick={this.addForms}>Add More </button>
               </div>
             </div>
             <br />
-            <div class="form-group">
-              <div class="col-sm-offset-2 col-sm-10">
-                <button type="submit" class="btn btn-default btn-primary custom-btn">Submit</button>
+            <div  className ="form-group">
+              <div  className ="col-sm-offset-2 col-sm-10">
+                <button type="submit"  className ="btn btn-default btn-primary custom-btn">Submit</button>
               </div>
             </div>
             <br />

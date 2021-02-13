@@ -13,7 +13,7 @@
     "moment": "^2.29.1",
     "multiselect-react-dropdown": "^1.6.3",
     "react": "^17.0.1",
-    "react-bootstrap": "^1.4.0",
+    "react-bootstrap": "^1.4.3",
     "react-bootstrap-date-picker": "^5.1.0",
     "react-bootstrap-typeahead": "^5.1.4",
     "react-calendar-pane": "^1.0.4",

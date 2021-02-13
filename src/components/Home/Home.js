@@ -48,9 +48,9 @@ class Home extends Component {
         let userHeadquarterTemp = JSON.parse(sessionStorage.getItem(commonConstant.USER_DEFAULT_HEADQUARTER_ID))
         item != null &&  item.map(
             headquarter => {
-              console.log('matching: ' + headquarter.id + ": " + userHeadquarterTemp + " -- " + (headquarter.id == sessionStorage.getItem("headquarterId")))
+              //console.log('matching: ' + headquarter.id + ": " + userHeadquarterTemp + " -- " + (headquarter.id == sessionStorage.getItem("headquarterId")))
               if (headquarter.id == userHeadquarterTemp) {
-                console.log("this happened 1")
+                //console.log("this happened 1")
                 userHeadquarterTemp = { id: headquarter.id, name: headquarter.name };
                 sessionStorage.setItem('defaultUserHeadquarter', JSON.stringify(userHeadquarterTemp));
                 this.setState({ userHeadquarter: userHeadquarterTemp })
@@ -191,7 +191,7 @@ class Home extends Component {
 
                             </div>
                             <footer>
-                                <p class="footer">@copyright</p>
+                                <p  className ="footer">@copyright</p>
                             </footer>
                         </div>
 

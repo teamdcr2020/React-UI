@@ -42,6 +42,7 @@ export class Template extends Component {
     this.populateLocationItem = this.populateLocationItem.bind(this);
     this.addPhysicianSamples = this.addPhysicianSamples.bind(this)
     this.populateData = this.populateData.bind(this);
+    this.removePhysicianSample = this.removePhysicianSample.bind(this)
 
   }
 
@@ -51,6 +52,7 @@ export class Template extends Component {
     if(item == null )
     {
     setTimeout(() => {
+      //console.log('timeout executing for data population')
       this.populateData(item);
     
     }, 4000);
@@ -71,9 +73,9 @@ export class Template extends Component {
         () => {
         item != null &&  item.map(
             headquarter => {
-              console.log('matching: ' + headquarter.id + ": " + headquarterIdInSession + " -- " + (headquarter.id == sessionStorage.getItem("headquarterId")))
+              //console.log('matching: ' + headquarter.id + ": " + headquarterIdInSession + " -- " + (headquarter.id == sessionStorage.getItem("headquarterId")))
               if (headquarter.id == headquarterIdInSession) {
-                console.log("this happened 1")
+                //console.log("this happened 1")
                 userHeadquarterTemp = { id: headquarter.id, name: headquarter.name };
                 sessionStorage.setItem('defaultUserHeadquarter', JSON.stringify(userHeadquarterTemp));
                 this.setState({ userHeadquarter: userHeadquarterTemp })
@@ -100,7 +102,7 @@ export class Template extends Component {
 
     for (var i = 0; totalList != null && totalList!= null && i < totalList.length; i++) {
       var found = false;
-      for (var j = 0; j < businessAreaList.length; j++) {
+      for (var j = 0; businessAreaList!= null && j < businessAreaList.length; j++) {
         if (businessAreaList[j].id === totalList[i].businessareaId) {
           found = true;
           break;
@@ -120,7 +122,7 @@ export class Template extends Component {
     var selectedHeadQuarterTemp = [];
     console.log("headquarter selected: " + e)
 
-    for (var i = 0; i < this.state.headquarterList.length; i++) {
+    for (var i = 0; this.state.headquarterList != null && i < this.state.headquarterList.length; i++) {
       // alert(this.state.headquarterList[i].id==e)
       if (this.state.headquarterList[i].id == e) {
         selectedHeadQuarterTemp = this.state.headquarterList[i];
@@ -139,13 +141,11 @@ export class Template extends Component {
         (result) => {
           if (result.data) {
             this.setState({ selectedLocation: { id: 0, name: "Location" }, doctorList: [] })
-            console.log('data for new Headquarter id: ' + selectedHeadQuarterTemp.id + '--' + result.data.data)
+            //console.log('data for new Headquarter id: ' + selectedHeadQuarterTemp.id + '--' + result.data.data)
             let locationMapTemp = (result.data.data);
-            console.log('LocaitonMapTem:' + locationMapTemp)
+            //console.log('LocaitonMapTem:' + locationMapTemp)
             this.getLocationList(locationMapTemp)
             this.populateLocationItem();
-
-
           }
           else {
 
@@ -163,7 +163,7 @@ export class Template extends Component {
 
     var selectedLocationName = {};
 
-    for (var i = 0; i < this.state.locationList.length; i++) {
+    for (var i = 0; this.state.locationList!= null && i < this.state.locationList.length; i++) {
       // alert(this.state.headquarterList[i].id==e)
       if (this.state.locationList[i].id == e) {
         selectedLocationName = this.state.locationList[i];
@@ -192,7 +192,7 @@ export class Template extends Component {
     },
 
       () => { console.log('doctorList: ' + JSON.stringify(this.state.doctorList)) });
-    console.log(JSON.stringify('Final List: ' + JSON.stringify(list)))
+    //console.log(JSON.stringify('Final List: ' + JSON.stringify(list)))
   }
 
   populateLocationItem(list) {
@@ -203,7 +203,7 @@ export class Template extends Component {
           alignRight
           title={this.state.selectedLocation.name}
           id="dropdown-menu-align-right"
-          class="col-sm-10 control-label w-100 btn-primary custom-btn "
+          class ="col-sm-10 control-label w-100 btn-primary custom-btn "
 
           onSelect={this.handleLocationSelection}
         >
@@ -221,7 +221,7 @@ export class Template extends Component {
           alignRight
           title='No Locations Available'
           id="dropdown-menu-align-right"
-          class="col-sm-10 control-label w-100 btn-primary custom-btn "
+          class ="col-sm-10 control-label w-100 btn-primary custom-btn "
         // onSelect={this.handleLocationSelection}
         >
 
@@ -242,6 +242,13 @@ export class Template extends Component {
     this.setState({ physicianSamples: samples })
   }
 
+  removePhysicianSample()
+  {
+    let samples = this.state.PhysicianSamples;
+  //  console.log(samples.length + ": " + JSON.stringify(samples))
+    samples.pop();
+    this.setState({ physicianSamples: samples })
+  }
 
   render() {
 
@@ -256,7 +263,7 @@ export class Template extends Component {
         alignRight
         title={this.state.selectedHeadquarter.name}
         id="headquarterDropdown"
-        class="col-sm-10 control-label w-100 .custom-color "
+        class ="col-sm-10 control-label w-100 .custom-color "
         style={{ backgroundColor: '#024B65' }}
         onSelect={this.handleHeadquarterSelection}
       >
@@ -270,66 +277,66 @@ export class Template extends Component {
       <div>
         {this.state.PhysicianSamples.map((form, index) => {
           //   {this.setState({noOfForms: this.state.noOfForms+1})}
-          return <PhysicianSample id={index} key={index} size={this.state.PhysicianSamples.length} />
+          return <PhysicianSample id={index} key={index} size={this.state.PhysicianSamples != null && this.state.PhysicianSamples.length} />
         })}
       </div>
     );
 
 
-    giftsList = (this.state.giftsList.map((gift) => { return { name: gift.name, id: gift.id } }))
+    giftsList = (this.state.giftsList!= null && this.state.giftsList.map((gift) => { return { name: gift.name, id: gift.id } }))
     //console.log(typeof (giftsList) + ' gift list: ' + JSON.stringify(giftsList))
 
 
     return (
 
 
-      <form class="form-horizontal  " style={{ marginLeft: "5%", marginRight: "5%" }} id={this.props.id} idsize={this.props.size} srole="form">
+      <form  className ="form-horizontal  " style={{ marginLeft: "5%", marginRight: "5%" }} id={this.props.id} idsize={this.props.size} srole="form">
 
         <br />
 
-        <div class="form-group">
-          <label class="col-sm-2 control-label">Headquarter</label>
-          <div class="col-sm-10">
+        <div  className ="form-group">
+          <label  className ="col-sm-2 control-label">Headquarter</label>
+          <div  className ="col-sm-10">
             {headquarterItems}
           </div>
         </div>
 
-        <div class="form-group">
-          <label class="col-sm-2 control-label">Location</label>
-          <div class="col-sm-10">
+        <div  className ="form-group">
+          <label  className ="col-sm-2 control-label">Location</label>
+          <div  className ="col-sm-10">
             {this.populateLocationItem(this.state.locationList)}
           </div>
         </div>
 
 
 
-        <div class="form-group">
-          <label htmlfor="Doctor1" class="col-sm-2 control-label">Doctor</label>
-          <div class="col-sm-10" style={{ width: "webkit-fill-available" }}>
+        <div  className ="form-group">
+          <label htmlfor="Doctor1"  className ="col-sm-2 control-label">Doctor</label>
+          <div  className ="col-sm-10" style={{ width: "webkit-fill-available" }}>
             <Typeahead
               style={{ width: "100%", display: 'inline-block' }}
               id="basic-typeahead-single"
               labelKey="name"
-              //onChange={this.changeSampleName}
-              options={this.state.doctorList}
+              onChange={(s)=>this.props.showHideName(this.props.id, s)}
+              options={this.state.doctorList!= null && this.state.doctorList}
               placeholder="Choose Doctor"
             //selected={[{ name: 'Srigar', id: 1 }]}
             />
           </div>
         </div>
-        <div class="form-group">
-          <label htmlfor="LVD" class="col-sm-2 control-label">Last Visited Date</label>
-          <div class="col-sm-10">
-            <input type="text" class="form-control" id="LVD1" placeholder="Last Visited Date" readOnly />
+        <div  className ="form-group">
+          <label htmlfor="LVD"  className ="col-sm-2 control-label">Last Visited Date</label>
+          <div  className ="col-sm-10">
+            <input type="text"  className ="form-control" id="LVD1" placeholder="Last Visited Date" readOnly />
           </div>
         </div>
 
-        <div class="form-group">
-          <label htmlfor="visitedWith1" class="col-sm-2 control-label">Visited with</label>
-          <div class="col-sm-offset-2 col-sm-10">
-            <div class="dropdown">
+        <div  className ="form-group">
+          <label htmlfor="visitedWith1"  className ="col-sm-2 control-label">Visited with</label>
+          <div  className ="col-sm-offset-2 col-sm-10">
+            <div  className ="dropdown">
               <Multiselect
-                options={this.state.userList} // Options to display in the dropdown
+                options={this.state.userList!= null && this.state.userList} // Options to display in the dropdown
                 selectedValues={this.state.selectedValue} // Preselected value to persist in dropdown
                 onSelect={this.onSelect} // Function will trigger on select event
                 onRemove={this.onRemove} // Function will trigger on remove event
@@ -338,12 +345,12 @@ export class Template extends Component {
             </div>
           </div>
         </div>
-        <div class="form-group">
-          <label htmlfor="ProductDetails1" class="col-sm-2 control-label">Product Details</label>
-          <div class="col-sm-offset-2 col-sm-10">
-            <div class="dropdown">
+        <div  className ="form-group">
+          <label htmlfor="ProductDetails1"  className ="col-sm-2 control-label">Product Details</label>
+          <div  className ="col-sm-offset-2 col-sm-10">
+            <div  className ="dropdown">
               <Multiselect
-                options={this.state.productList} // Options to display in the dropdown
+                options={this.state.productList!= null && this.state.productList} // Options to display in the dropdown
                 selectedValues={this.state.selectedValue} // Preselected value to persist in dropdown
                 onSelect={this.onSelect} // Function will trigger on select event
                 onRemove={this.onRemove} // Function will trigger on remove event
@@ -355,27 +362,27 @@ export class Template extends Component {
 
 
 
-        <div class="form-group">
-          <div class="col-sm-offset-2 col-sm-12 control-label">
-            <label class="label" >LBL</label>
-            <input class="col-sm-offset-2 col-sm-5" padding={30} type="radio" name="radio" value="radio1" className="k-radio" onChange={this.handleChange} /> <label>Yes</label> <span>&nbsp;&nbsp;&nbsp;&nbsp;</span>
-            <input class="col-sm-offset-2 col-sm-5" padding={30} type="radio" name="radio" value="radio3" className="k-radio" onChange={this.handleChange} />  <label>No</label>
+        <div  className ="form-group">
+          <div  className ="col-sm-offset-2 col-sm-12 control-label">
+            <label  className ="label" >LBL</label>
+            <input  className ="col-sm-offset-2 col-sm-5" padding={30} type="radio" name="radio" value="radio1" className="k-radio" onChange={this.handleChange} /> <label>Yes</label> <span>&nbsp;&nbsp;&nbsp;&nbsp;</span>
+            <input  className ="col-sm-offset-2 col-sm-5" padding={30} type="radio" name="radio" value="radio3" className="k-radio" onChange={this.handleChange} />  <label>No</label>
           </div>
         </div>
 
         <div>
-          <label class="col-sm-2 control-label">Physician Sample</label>
+          <label  className ="col-sm-2 control-label">Physician Sample</label>
           {samples}
-          <p onClick={this.addPhysicianSamples}>Add more</p>
+          <label className = 'normalLabel' onClick={this.addPhysicianSamples}>Add more</label> <label className = 'normalLabel'  onClick={this.removePhysicianSample}>Remove</label>
         </div>
         <br />
 
-        <div class="form-group">
-          <label htmlfor="GiftDetails1" class="col-sm-2 control-label">Gift Details</label>
-          <div class="col-sm-offset-2 col-sm-10">
-            <div class="dropdown">
+        <div  className ="form-group">
+          <label htmlfor="GiftDetails1"  className ="col-sm-2 control-label">Gift Details</label>
+          <div  className ="col-sm-offset-2 col-sm-10">
+            <div  className ="dropdown">
               <Multiselect
-                options={giftsList} // Options to display in the dropdown
+                options={giftsList != null && giftsList} // Options to display in the dropdown
                 selectedValues={this.state.selectedValue} // Preselected value to persist in dropdown
                 onSelect={this.onSelect} // Function will trigger on select event
                 onRemove={this.onRemove} // Function will trigger on remove event
@@ -385,9 +392,9 @@ export class Template extends Component {
           </div>
         </div>
 
-        <div class="form-group">
-          <label htmlfor="remarks1" class="col-sm-2 control-label">Remarks</label>
-          <div class="col-sm-offset-2 col-sm-10">
+        <div cla className ss="form-group">
+          <label htmlfor="remarks1"  className ="col-sm-2 control-label">Remarks</label>
+          <div  className ="col-sm-offset-2 col-sm-10">
             <textarea className="form-control" id="exampleFormControlTextarea1" rows="2" />
           </div>
         </div>

@@ -43,6 +43,11 @@ label{
   font-weight: bold;
 }
 
+.normalLabel
+{
+  font-weight: normal;
+}
+
 .dcrDate
 {
   text-align: center;
