@@ -1,16 +1,9 @@
 import React, { Component, useState } from 'react';
-import moment, { calendarFormat } from 'moment';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import DropdownButton from 'react-bootstrap/DropdownButton';
 import Dropdown from 'react-bootstrap/Dropdown'
 import { Multiselect } from 'multiselect-react-dropdown';
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
-import SelectSearch from 'react-select-search';
 import { Typeahead } from 'react-bootstrap-typeahead';
-import plus from '../../images/plus.png'
-import minus from '../../images/minus.png'
-import patenLogo from '../../images/company_logo.png';
 import * as commonConstant from '../common/CommonConstant'
 import { PostData } from '../../services/PostData';
 import PhysicianSample from './PhysicianSample'
@@ -19,7 +12,7 @@ export class Template extends Component {
   constructor() {
     super();
     this.state = {
-      selectedDate: moment(),
+      selectedDate: {},
       doctorVisitFormList: new Array(),
       date: new Date(),
       headquarterList: [],
@@ -34,7 +27,8 @@ export class Template extends Component {
       giftsList: [],
       locationLoading: false,
       doctorLoading: false,
-      PhysicianSamples: []
+      PhysicianSamples: [],
+      userNameWithDesignationList: []
     }
     this.handleHeadquarterSelection = this.handleHeadquarterSelection.bind(this)
     this.getLocationList = this.getLocationList.bind(this)
@@ -55,7 +49,7 @@ export class Template extends Component {
       //console.log('timeout executing for data population')
       this.populateData(item);
     
-    }, 4000);
+    }, 6000);
   }
   else
     this.populateData(item)
@@ -87,7 +81,7 @@ export class Template extends Component {
       this.setState({ productList: JSON.parse(sessionStorage.getItem(commonConstant.GET_ALL_PRODUCT)) })
   
       this.setState({ giftsList: JSON.parse(sessionStorage.getItem(commonConstant.GET_ALL_GIFT)) })
-      this.setState({ userList: JSON.parse(sessionStorage.getItem(commonConstant.GET_ALL_USER)) }, ()=>console.log("Userlist: -- "+JSON.stringify(this.state.userList)))
+      this.setState({ userList: JSON.parse(sessionStorage.getItem(commonConstant.GET_ALL_USER)) }, ()=> this.state.userList.map(user=>{user.name = user.name+' ('+user.designation+')'}))
   
       //console.log(JSON.stringify(this.state.userList));
       this.getLocationList(JSON.parse(sessionStorage.getItem(commonConstant.GET_DOCTORS_SHOPS_BY_HEADQUARTER_ID)));

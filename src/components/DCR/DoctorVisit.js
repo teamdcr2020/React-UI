@@ -87,7 +87,7 @@ class DoctorVisits extends Component {
       this.setState({ awaitingResponse: true })
       setTimeout(() => {
         this.setState({ awaitingResponse: false })
-      }, 3000);
+      }, 5000);
 
     }
   }
@@ -172,7 +172,7 @@ class DoctorVisits extends Component {
 
         {this.state.doctorVisitFormList.map((form, index) => {
           //   {this.setState({noOfForms: this.state.noOfForms+1})}
-          return <div> <br/>  <a    id={'showHide'+index} onClick={()=> this.showHide({index})} className="btn btn-default btn-primary custom-btn" >  {index +1}. Doctor Visit  </a>
+          return <div> <br/>  <a    id={'showHide'+index} onClick={()=> this.showHide({index})} className="btn btn-default btn-primary custom-btn" >  {index +1}. Doctor Visit </a>
           <Template id={'template'+index} size={this.state.doctorVisitFormList != null && this.state.doctorVisitFormList.length} showHideName = {this.showHideName} />
           
           </div>
@@ -204,7 +204,7 @@ class DoctorVisits extends Component {
 
               <div  className ="col-sm-6  col-md-6 col-lg-6" style={{ display: 'inline-block' }}>
                 <label  className ="col-sm-3  col-md-4 col-lg-4 control-label" style={{ width: "40%", paddingLeft: "0%" }}>Select Date</label>
-                <DatePicker  className ="col-sm-3  col-md-8 col-lg-8" id='DCRDate' selected={this.state.date} style={{ width: "60%" }} locale='in' onChange={this.handleDateChange} />
+                <DatePicker  className ="col-sm-3  col-md-8 col-lg-8" id='DCRDate' selected={this.state.date} style={{ width: "60%" }} locale='el' dateFormat="dd/MM/yyyy" onChange={this.handleDateChange} />
               </div>
             </div>
 
