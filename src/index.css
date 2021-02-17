@@ -133,3 +133,24 @@ bottom: 0;
   color: white; background: #666666; opacity: .8;
   z-index: 1000;
 }
+
+.errorSearchBox
+{
+ border : 2px solid red
+}
+
+.searchBox
+{
+ border : 1px solid #cccccc
+}
+
+
+.error_react-datepicker__input-container
+{
+  border: 2px solid red
+}
+
+.react-datepicker__input-container
+{
+  border: 1px solid #cccccc
+}

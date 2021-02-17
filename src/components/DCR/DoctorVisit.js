@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import moment, { calendarFormat, RFC_2822 } from 'moment';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Redirect } from 'react-router-dom';
-import DatePicker, {registerLocale }from "react-datepicker";
+import DatePicker, { registerLocale } from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { BeatLoader } from 'react-spinners'
 import LoadingOverlay from 'react-loading-overlay'
@@ -12,29 +12,29 @@ import Footer from '../common/Footer'
 import * as commonConstant from '../common/CommonConstant'
 import el from "date-fns/locale/en-IN";
 import Collapse from 'react-bootstrap/Collapse';
+
 registerLocale("el", el)
+
+
 class DoctorVisitForm {
-  constructor() {
+  constructor() { }
+  id = '';
+  businessArea = '';
+  doctor = {};
+  visitedWith = [];
+  lastVisitedDate = {};
+  productDetails = [];
+  physicianSample = [];
+  lbl = '';
+  gift = [];
+  remarks = '';
+  formCount = 1;
+  headquarter = []
 
-    this.state = {
-      businessAreaId: '',
-      doctorId: '',
-      visitedWith: new Array(),
-      lastVisitedDate: '',
-      productDetails: new Array(),
-      physicianSample: new Array(),
-      lbl: '',
-      gift: new Array(),
-      remarks: '',
-      formCount: 1,
-      userHeadquarter: {},
-      headquarterList: [],
-      collapseVisit: false
 
-    }
-  }
 
 }
+
 class DoctorVisits extends Component {
 
 
@@ -42,12 +42,14 @@ class DoctorVisits extends Component {
     super();
     this.state = {
       selectedDate: moment(),
-      doctorVisitFormList: [new DoctorVisitForm()],
+      doctorVisitFormList: [{}],
       noOfForms: 0,
       date: new Date(),
-      awaitingResponse:true
+      awaitingResponse: true,
+      datePickerColor: 'react-datepicker__input-container'
 
     }
+
     this.handleDateChange = this.handleDateChange.bind(this)
     this.changeSampleName = this.changeSampleName.bind(this)
     this.singleSelections = this.singleSelections.bind(this)
@@ -56,8 +58,9 @@ class DoctorVisits extends Component {
     this.waitForData = this.waitForData.bind(this)
   }
 
-  componentWillMount() {
+  componentDidMount() {
     this.waitForData()
+    sessionStorage.removeItem('filledDoctors')
     // var item = JSON.parse(sessionStorage.getItem(commonConstant.GET_ALL_HEADQUARTER)) 
     // var headquarterInSession = sessionStorage.getItem('headquarterId');
     // console.log("item: "+JSON.stringify(headquarterInSession))
@@ -71,7 +74,7 @@ class DoctorVisits extends Component {
     let flag3 = sessionStorage.getItem(commonConstant.GET_ALL_USER);
     //let flag4 = sessionStorage.getItem(commonConstant.GET_DOCTORS_SHOPS_BY_HEADQUARTER_ID);
     //let flag5 = sessionStorage.getItem(commonConstant.GET_DOCTORS_SHOPS_BY_HEADQUARTER_ID);
-   // console.log(flag1 + ' - ' + flag2 + ' - ' + flag3)
+    // console.log(flag1 + ' - ' + flag2 + ' - ' + flag3)
     if (flag1 && flag2 && flag3) {
       this.setState({ awaitingResponse: false })
       setTimeout(() => {
@@ -79,7 +82,7 @@ class DoctorVisits extends Component {
         this.props.history.push('/doctorVisitForm');
       }, 5000);
 
-      
+
 
     }
     else {
@@ -110,84 +113,112 @@ class DoctorVisits extends Component {
   }
 
   handleDateChange(e) {
-    this.setState({ date: e })
+    this.setState({ date: e }, () => {
+
+      if (moment().isBefore(this.state.date)) {
+        this.setState({ datePickerColor: 'error_react-datepicker__input-container' })
+      }
+      else {
+        this.setState({ datePickerColor: 'react-datepicker__input-container' })
+      }
+
+    })
+
+
   }
 
   addForms() {
     {
-      var list = [...this.state.doctorVisitFormList];
-      //console.log("list size:" + list.length)
-      for(let i=0; i<list.length; i++)
-      {
-        this.showHide({index: i}, true)
+
+      let valid = true;
+      for (let j = 0; j < this.state.doctorVisitFormList.length; j++) {
+        let formValidity = this.state.doctorVisitFormList[j].current.validateForm();
+        valid = valid & formValidity
+        if (!formValidity)
+          document.getElementById('showHide' + j).style.color = 'red'
+        else
+          document.getElementById('showHide' + j).style.color = 'white'
       }
-      list.push(new DoctorVisitForm());
+      if (moment().isBefore(this.state.date)) {
+        valid = false;
+        this.setState({ datePickerColor: 'error_react-datepicker__input-container' })
+      }
 
-      //console.log('form size before: ' + this.state.doctorVisitFormList.length)
-      this.setState({ doctorVisitFormList: list });
-      //console.log('form size after: ' + this.state.doctorVisitFormList.length)
+
+      if (valid) {
+        //document.getElementById('logs').innerHTML  = 'Add forms triggered';
+        let logsfield = '<br/> Add forms triggered' + document.getElementById('logs').innerHTML;
+
+        var list = [...this.state.doctorVisitFormList];
+        logsfield = logsfield + "1. ";
+        document.getElementById('logs').innerHTML = logsfield
+        //console.log("list size:" + list.length)
+        for (let i = 0; i < list.length; i++) {
+          this.showHide({ index: i }, true)
+        }
+
+        list.push(new DoctorVisitForm());
+        logsfield = logsfield + "2. ";
+        document.getElementById('logs').innerHTML = logsfield
+        //console.log('form size before: ' + this.state.doctorVisitFormList.length)
+        this.setState({ doctorVisitFormList: list });
+        //console.log('form size after: ' + this.state.doctorVisitFormList.length)
+        document.getElementById('logs').innerHTML = logsfield + "3. "
+      }
     }
-
   }
   showHide(index, hideFlag) {
-    
-    let templateId = 'template'+index.index;
-    console.log('showhiede for: '+templateId+' -- '+JSON.stringify(index))
-    if(document.getElementById(templateId) != null)
-    {
-    if(document.getElementById(templateId).style.display == "none" && !hideFlag)
-    document.getElementById(templateId).style.display  = "block"
-    else
-    document.getElementById(templateId).style.display = "none";
+
+    let templateId = 'template' + index.index;
+    console.log('showhiede for: ' + templateId + ' -- ' + JSON.stringify(index))
+    if (document.getElementById(templateId) != null) {
+      if (document.getElementById(templateId).style.display == "none" && !hideFlag)
+        document.getElementById(templateId).style.display = "block"
+      else
+        document.getElementById(templateId).style.display = "none";
     }
   }
 
-  showHideName(id, name)
-  {
-    if(name != 'undefined' && name.length > 0)
-    {
-    let findIndex = parseInt(id.substring(8))
-    //console.log('index is :'+id.substring(8)+JSON.stringify(name))
-    let inner = document.getElementById('showHide'+findIndex).innerHTML;
-    document.getElementById('showHide'+findIndex).innerHTML = (findIndex+1 )+'. Doctor Visit : '+ name[0].name;
+  showHideName(id, name) {
+    if (name != 'undefined' && name.length > 0) {
+      let findIndex = parseInt(id.substring(8))
+      //console.log('index is :'+id.substring(8)+JSON.stringify(name))
+      let inner = document.getElementById('showHide' + findIndex).innerHTML;
+      document.getElementById('showHide' + findIndex).innerHTML = (findIndex + 1) + '. Doctor Visit : ' + name[0].name;
     }
   }
 
-  removeTemplate(index)
-  {
-    console.log('removeTemplate called for index: '+JSON.stringify(index))
+  removeTemplate(index) {
+    console.log('removeTemplate called for index: ' + JSON.stringify(index))
     let visitList = this.state.doctorVisitFormList;
-    for(let i=0; i<visitList.length; i++)
-    {
-      if(i===index.index)
-      {
-        visitList.splice(i,1)
+    for (let i = 0; i < visitList.length; i++) {
+      if (i === index) {
+        visitList.splice(i, 1)
       }
-      
-    }
 
-    this.setState({doctorVisitFormList:visitList})
+    }
+    this.setState({ doctorVisitFormList: visitList })
 
   }
   render() {
-    
+
     if (!sessionStorage.getItem('userData')) {
       return (<Redirect to={'/'} />)
-  }
+    }
     let formList = null;
     formList = (
       <div>
 
         {this.state.doctorVisitFormList.map((form, index) => {
           //   {this.setState({noOfForms: this.state.noOfForms+1})}
-          //console.log('index while population of doctor visit template'+index);
-          return <div> <br/> 
-          <button type="submit"  className ="btn btn-default btn-primary custom-btn" style ={{ width: "9%" }} onClick={()=> this.removeTemplate({index})}> X </button> 
-           <a    id={'showHide'+index} onClick={()=> this.showHide({index})} className="btn btn-default btn-primary custom-btn" style ={{ width: "90%" }}  >  {index +1}. Doctor Visit </a>
-          <Template id={'template'+index} size={this.state.doctorVisitFormList != null && this.state.doctorVisitFormList.length} showHideName = {this.showHideName} />
-          
+          console.log('index while population of doctor visit template' + index);
+          return <div> <br />
+            <button type="submit" className="btn btn-default btn-primary custom-btn" style={{ width: "9%" }} onClick={() => this.removeTemplate({ index })}> X </button>
+            <a id={'showHide' + index} onClick={() => this.showHide({ index })} className="btn btn-default btn-primary custom-btn" style={{ width: "90%" }}  >  {index + 1}. Doctor Visit </a>
+            <Template id={'template' + index} size={this.state.doctorVisitFormList != null && this.state.doctorVisitFormList.length} showHideName={this.showHideName} ref={this.state.doctorVisitFormList[index]} />
+
           </div>
-         
+
 
 
         })}
@@ -211,11 +242,11 @@ class DoctorVisits extends Component {
 
             <h2 style={{ textAlign: 'center' }}>Add Doctor Visits</h2>
             <br />
-            <div className ="form-group">
+            <div className="form-group">
 
-              <div  className ="col-sm-6  col-md-6 col-lg-6" style={{ display: 'inline-block' }}>
-                <label  className ="col-sm-3  col-md-4 col-lg-4 control-label" style={{ width: "40%", paddingLeft: "0%" }}>Select Date</label>
-                <DatePicker  className ="col-sm-3  col-md-8 col-lg-8" id='DCRDate' selected={this.state.date} style={{ width: "60%" }} locale='el' dateFormat="dd/MM/yyyy" onChange={this.handleDateChange} />
+              <div className="col-sm-6  col-md-6 col-lg-6" style={{ display: 'inline-block' }}>
+                <label className="col-sm-3  col-md-4 col-lg-4 control-label" style={{ width: "40%", paddingLeft: "0%" }}>Select Date</label>
+                <DatePicker className={"col-sm-3  col-md-8 col-lg-8  " + this.state.datePickerColor} id='DCRDate' selected={this.state.date} style={{ width: "60%" }} locale='el' dateFormat="dd/MM/yyyy" onChange={this.handleDateChange} />
               </div>
             </div>
 
@@ -224,18 +255,18 @@ class DoctorVisits extends Component {
 
             {formList}
 
+            <div> <p id='logs' style={{ display: 'none' }}> </p> </div>
 
-
-            <div  className ="form-group">
-            <br/><br/>
-              <div  className ="col-sm-offset-2 col-sm-10">
-              <button type="submit"  className ="btn btn-default btn-primary custom-btn" style ={{ width: "49%" }} onClick={()=> this.removeTemplate()}> Remove </button>  <button type="submit" style ={{ width: "49%" }} className ="btn btn-default btn-primary custom-btn " onClick={this.addForms}>Add More </button>
+            <div className="form-group">
+              <br /><br />
+              <div className="col-sm-offset-2 col-sm-10">
+                <button type="submit" className="btn btn-default btn-primary custom-btn" style={{ width: "49%" }} onClick={() => this.removeTemplate()}> Remove </button>  <button type="submit" style={{ width: "49%" }} className="btn btn-default btn-primary custom-btn " onClick={this.addForms}>Add More </button>
               </div>
             </div>
             <br />
-            <div  className ="form-group">
-              <div  className ="col-sm-offset-2 col-sm-10">
-                <button type="submit"  className ="btn btn-default btn-primary custom-btn">Submit</button>
+            <div className="form-group">
+              <div className="col-sm-offset-2 col-sm-10">
+                <button type="submit" className="btn btn-default btn-primary custom-btn">Submit</button>
               </div>
             </div>
             <br />
