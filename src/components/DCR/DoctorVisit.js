@@ -189,16 +189,16 @@ class DoctorVisits extends Component {
   }
 
   removeTemplate(index) {
+    let item = index.index;
+   
     console.log('removeTemplate called for index: ' + JSON.stringify(index))
-    let visitList = this.state.doctorVisitFormList;
-    for (let i = 0; i < visitList.length; i++) {
-      if (i === index) {
-        visitList.splice(i, 1)
-      }
-
+    if(this.state.doctorVisitFormList[item])
+    {
+    this.state.doctorVisitFormList[item].current. hideTemplate();
+    this.state.doctorVisitFormList.splice(index.index,1);
+    document.getElementById("form"+index.index).style.display= "none";
     }
-    this.setState({ doctorVisitFormList: visitList })
-
+    
   }
   render() {
 
@@ -212,10 +212,10 @@ class DoctorVisits extends Component {
         {this.state.doctorVisitFormList.map((form, index) => {
           //   {this.setState({noOfForms: this.state.noOfForms+1})}
           console.log('index while population of doctor visit template' + index);
-          return <div> <br />
+          return <div id={'form'+index}>   <br />
             <button type="submit" className="btn btn-default btn-primary custom-btn" style={{ width: "9%" }} onClick={() => this.removeTemplate({ index })}> X </button>
             <a id={'showHide' + index} onClick={() => this.showHide({ index })} className="btn btn-default btn-primary custom-btn" style={{ width: "90%" }}  >  {index + 1}. Doctor Visit </a>
-            <Template id={'template' + index} size={this.state.doctorVisitFormList != null && this.state.doctorVisitFormList.length} showHideName={this.showHideName} ref={this.state.doctorVisitFormList[index]} />
+            <Template id={'template' + index}  size={this.state.doctorVisitFormList != null && this.state.doctorVisitFormList.length} showHideName={this.showHideName} ref={this.state.doctorVisitFormList[index]} />
 
           </div>
 
@@ -260,15 +260,17 @@ class DoctorVisits extends Component {
             <div className="form-group">
               <br /><br />
               <div className="col-sm-offset-2 col-sm-10">
-                <button type="submit" className="btn btn-default btn-primary custom-btn" style={{ width: "49%" }} onClick={() => this.removeTemplate()}> Remove </button>  <button type="submit" style={{ width: "49%" }} className="btn btn-default btn-primary custom-btn " onClick={this.addForms}>Add More </button>
+                {/* <button type="submit" className="btn btn-default btn-primary custom-btn" style={{ width: "49%" }} onClick={() => this.removeTemplate()}> Remove </button>  */}
+                <button type="submit" style={{ width: "49%" }} className="btn btn-default btn-primary custom-btn " onClick={this.addForms}>Add More </button>
+                <button type="submit" style={{ width: "49%" }} className="btn btn-default btn-primary custom-btn">Submit</button>
               </div>
             </div>
             <br />
-            <div className="form-group">
+            {/* <div className="form-group">
               <div className="col-sm-offset-2 col-sm-10">
                 <button type="submit" className="btn btn-default btn-primary custom-btn">Submit</button>
               </div>
-            </div>
+            </div> */}
             <br />
             <br />
 

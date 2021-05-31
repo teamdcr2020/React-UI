@@ -47,7 +47,8 @@ export class Template extends Component {
       lblStyle: '1px solid #cccccc',
       giftStyle: 'searchBox',
       remarksStyle: '1px solid #cccccc',
-      doctorExists: false
+      doctorExists: false,
+      displayStatus: 'block'
 
     }
     this.handleHeadquarterSelection = this.handleHeadquarterSelection.bind(this)
@@ -59,6 +60,7 @@ export class Template extends Component {
     this.removePhysicianSample = this.removePhysicianSample.bind(this)
     this.returnFilledForm = this.returnFilledForm.bind(this)
     this.validateForm = this.validateForm.bind(this)
+    this.hideTemplate = this.hideTemplate.bind(this)
 
   }
 
@@ -327,11 +329,12 @@ export class Template extends Component {
           if (doctor.templateId == this.state.id) {
             found = true;
           }
-          if (doctor.doctor[0].id == e[0].id && validDoctor) {
+          if (doctor.doctor[0].id == e[0].id && validDoctor && !found ) {
             this.state.selectedDoctor = '';
             validDoctor = false;
             this.setState({ doctorStyle: this.state.errorBorderStyle })
             this.setState({ doctorExists: true })
+            console.log("doctor validation 1")
           }
         }
       })
@@ -341,18 +344,21 @@ export class Template extends Component {
         let value = { "templateId": this.state.id, 'doctor': e }
         filledDoctors.push(value);
         sessionStorage.setItem('filledDoctors', JSON.stringify(filledDoctors));
+        console.log("doctor validation 2")
       }
       else if (found && validDoctor) {
         filledDoctors.map((doctor) => {
           if (doctor) {
             if (doctor.templateId == this.state.id) {
               doctor.doctor = e
+              console.log("doctor validation 3")
             }
           }
         })
         this.setState({ doctorExists: false })
         this.setState({ doctorStyle: this.state.defaultBorderStyle })
         sessionStorage.setItem('filledDoctors', JSON.stringify(filledDoctors));
+        console.log("doctor validation 4")
       }
 
     }
@@ -362,7 +368,7 @@ export class Template extends Component {
     let visit = this.returnFilledForm();
     let errorBorderStyle = '2px solid red'
     let defaultBorderStyle = '1px solid #cccccc';
-    let headquarterStyle = document.getElementById("headquarterDropdown" + this.state.id).style.border
+   // let headquarterStyle = document.getElementById("headquarterDropdown" + this.state.id).style.border
     console.log(JSON.stringify(visit) + '----' + this.state.id)
     if (visit.headquarterId == null || visit.headquarterId.length == 0) {
       valid = false;
@@ -392,6 +398,11 @@ export class Template extends Component {
       this.setState({ productStyle: 'searchBox' })
 
     return valid;
+  }
+
+  hideTemplate()
+  {
+    document.getElementById(this.props.id).innerHTML = "<div/>"
   }
 
   render() {
@@ -427,11 +438,15 @@ export class Template extends Component {
     giftsList = (this.state.giftsList != null && this.state.giftsList.map((gift) => { return { name: gift.name, id: gift.id } }))
     //console.log(typeof (giftsList) + ' gift list: ' + JSON.stringify(giftsList))
 
-
+    // let deleteItem = "template"+this.props.removeIndex;
+    // console.log("properties to delete: "+this.props.removeIndex+"  this template: "+this.props.id+"   deleteItem "+deleteItem+ "   "+(this.props.id === deleteItem));
+    
+    // if(this.props.id === deleteItem)
+    //    return(<div></div>)
+    // else
     return (
 
-
-      <form className="form-horizontal  " style={{ marginLeft: "5%", marginRight: "5%" }} id={this.props.id} idsize={this.props.size} srole="form">
+      <form className="form-horizontal  " style={{ marginLeft: "5%", marginRight: "5%" }} id={this.props.id} idsize={this.props.size} srole="form" >
 
         <br />
 
