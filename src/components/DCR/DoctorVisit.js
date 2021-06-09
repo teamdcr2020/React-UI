@@ -12,6 +12,7 @@ import Footer from '../common/Footer'
 import * as commonConstant from '../common/CommonConstant'
 import el from "date-fns/locale/en-IN";
 import Collapse from 'react-bootstrap/Collapse';
+import { nanoid } from 'nanoid';
 
 registerLocale("el", el)
 
@@ -42,7 +43,7 @@ class DoctorVisits extends Component {
     super();
     this.state = {
       selectedDate: moment(),
-      doctorVisitFormList: [{}],
+      doctorVisitFormList: [React.createRef()],
       noOfForms: 0,
       date: new Date(),
       awaitingResponse: true,
@@ -56,6 +57,7 @@ class DoctorVisits extends Component {
     this.redirectToHome = this.redirectToHome.bind(this)
     this.addForms = this.addForms.bind(this)
     this.waitForData = this.waitForData.bind(this)
+    this.removeItem = this.removeItem.bind(this)
   }
 
   componentDidMount() {
@@ -127,17 +129,14 @@ class DoctorVisits extends Component {
 
   }
 
-  addForms() {
+  addForms(e) {
     {
 
       let valid = true;
       for (let j = 0; j < this.state.doctorVisitFormList.length; j++) {
         let formValidity = this.state.doctorVisitFormList[j].current.validateForm();
         valid = valid & formValidity
-        if (!formValidity)
-          document.getElementById('showHide' + j).style.color = 'red'
-        else
-          document.getElementById('showHide' + j).style.color = 'white'
+
       }
       if (moment().isBefore(this.state.date)) {
         valid = false;
@@ -153,50 +152,28 @@ class DoctorVisits extends Component {
         logsfield = logsfield + "1. ";
         document.getElementById('logs').innerHTML = logsfield
         //console.log("list size:" + list.length)
-        for (let i = 0; i < list.length; i++) {
-          this.showHide({ index: i }, true)
-        }
 
-        list.push(new DoctorVisitForm());
+        list.push(React.createRef());
         logsfield = logsfield + "2. ";
         document.getElementById('logs').innerHTML = logsfield
-        //console.log('form size before: ' + this.state.doctorVisitFormList.length)
-        this.setState({ doctorVisitFormList: list });
+        //console.log('form size before: ' + this.state.doctorVisitFormList.length)\
+        e.preventDefault();
+        this.setState({ doctorVisitFormList: [...list ]});
         //console.log('form size after: ' + this.state.doctorVisitFormList.length)
         document.getElementById('logs').innerHTML = logsfield + "3. "
       }
     }
   }
-  showHide(index, hideFlag) {
 
-    let templateId = 'template' + index.index;
-    console.log('showhiede for: ' + templateId + ' -- ' + JSON.stringify(index))
-    if (document.getElementById(templateId) != null) {
-      if (document.getElementById(templateId).style.display == "none" && !hideFlag)
-        document.getElementById(templateId).style.display = "block"
-      else
-        document.getElementById(templateId).style.display = "none";
-    }
-  }
 
-  showHideName(id, name) {
-    if (name != 'undefined' && name.length > 0) {
-      let findIndex = parseInt(id.substring(8))
-      //console.log('index is :'+id.substring(8)+JSON.stringify(name))
-      let inner = document.getElementById('showHide' + findIndex).innerHTML;
-      document.getElementById('showHide' + findIndex).innerHTML = (findIndex + 1) + '. Doctor Visit : ' + name[0].name;
-    }
-  }
-
-  removeTemplate(index) {
-    let item = index.index;
-   
-    console.log('removeTemplate called for index: ' + JSON.stringify(index))
+   removeItem(item) {
+     console.log('removeTemplate called for index: ' + JSON.stringify(item))
     if(this.state.doctorVisitFormList[item])
     {
-    this.state.doctorVisitFormList[item].current. hideTemplate();
-    this.state.doctorVisitFormList.splice(index.index,1);
-    document.getElementById("form"+index.index).style.display= "none";
+    let items = [...this.state.doctorVisitFormList]
+    items.splice(item,1);
+
+    this.setState({doctorVisitFormList : items})
     }
     
   }
@@ -206,26 +183,23 @@ class DoctorVisits extends Component {
       return (<Redirect to={'/'} />)
     }
     let formList = null;
+    let counter =1;
     formList = (
       <div>
 
         {this.state.doctorVisitFormList.map((form, index) => {
           //   {this.setState({noOfForms: this.state.noOfForms+1})}
           console.log('index while population of doctor visit template' + index);
-          return <div id={'form'+index}>   <br />
-            <button type="submit" className="btn btn-default btn-primary custom-btn" style={{ width: "9%" }} onClick={() => this.removeTemplate({ index })}> X </button>
-            <a id={'showHide' + index} onClick={() => this.showHide({ index })} className="btn btn-default btn-primary custom-btn" style={{ width: "90%" }}  >  {index + 1}. Doctor Visit </a>
-            <Template id={'template' + index}  size={this.state.doctorVisitFormList != null && this.state.doctorVisitFormList.length} showHideName={this.showHideName} ref={this.state.doctorVisitFormList[index]} />
-
-          </div>
-
-
-
-        })}
-
+          return (
+   
+  
+         
+            <Template id={'template' + index} serial={index} removeFromParent= {this.removeItem} key= { index}  size={this.state.doctorVisitFormList != null && this.state.doctorVisitFormList.length} /*showHideName={this.showHideName}*/ ref={this.state.doctorVisitFormList[index]} />
+            
+    
+       ) })}
 
       </div>
-
 
     );
 
@@ -261,7 +235,7 @@ class DoctorVisits extends Component {
               <br /><br />
               <div className="col-sm-offset-2 col-sm-10">
                 {/* <button type="submit" className="btn btn-default btn-primary custom-btn" style={{ width: "49%" }} onClick={() => this.removeTemplate()}> Remove </button>  */}
-                <button type="submit" style={{ width: "49%" }} className="btn btn-default btn-primary custom-btn " onClick={this.addForms}>Add More </button>
+                <button type="submit" style={{ width: "49%" }} className="btn btn-default btn-primary custom-btn " onClick={(e)=>this.addForms(e)}>Add More </button>
                 <button type="submit" style={{ width: "49%" }} className="btn btn-default btn-primary custom-btn">Submit</button>
               </div>
             </div>

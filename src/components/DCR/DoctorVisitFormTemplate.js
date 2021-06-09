@@ -48,7 +48,8 @@ export class Template extends Component {
       giftStyle: 'searchBox',
       remarksStyle: '1px solid #cccccc',
       doctorExists: false,
-      displayStatus: 'block'
+      displayStatus: 'block',
+      deleted: false
 
     }
     this.handleHeadquarterSelection = this.handleHeadquarterSelection.bind(this)
@@ -397,6 +398,10 @@ export class Template extends Component {
     else
       this.setState({ productStyle: 'searchBox' })
 
+       if (!valid)
+         document.getElementById('showHide' + this.props.serial).style.color = 'red'
+       else
+         document.getElementById('showHide' +  this.props.serial).style.color = 'white'
     return valid;
   }
 
@@ -405,6 +410,25 @@ export class Template extends Component {
     document.getElementById(this.props.id).innerHTML = "<div/>"
   }
 
+  showHide(index, hideFlag) { 
+
+    let templateId = 'container'+index
+    console.log('showhiede for: ' + templateId + ' -- ' + JSON.stringify(index))
+    if (document.getElementById(templateId) != null) {
+      if (document.getElementById(templateId).style.display == "none" && !hideFlag)
+        document.getElementById(templateId).style.display = "block"
+      else
+        document.getElementById(templateId).style.display = "none";
+    }
+  }
+
+  showHideName(id, name) {
+    if (name != 'undefined' && name.length > 0) {
+      let findIndex = id
+      let inner = document.getElementById('showHide' + findIndex).innerHTML;
+      document.getElementById('showHide' + findIndex).innerHTML = (findIndex + 1) + '. Doctor Visit : ' + name[0].name;
+    }
+  }
   render() {
 
     let headquarterItems = null;
@@ -444,12 +468,28 @@ export class Template extends Component {
     // if(this.props.id === deleteItem)
     //    return(<div></div>)
     // else
+    if(this.state.deleted)
+    {
+      this.setState({deleted:false}, ()=>{ 
+        this.props.removeFromParent(this.props.serial)
+       
+      })
+      
+      console.log('removing:'+this.state.selectedDoctor)
+      return null;
+    }
+    else
     return (
 
       <form className="form-horizontal  " style={{ marginLeft: "5%", marginRight: "5%" }} id={this.props.id} idsize={this.props.size} srole="form" >
 
+     
         <br />
 
+        <a id={'showHide'+this.props.serial} onClick={() => this.showHide(this.props.serial)} className="btn btn-default btn-primary custom-btn" style={{ width: "90%" }}> {(this.props.serial+1) +'. ' } Doctor Visit </a>
+            <button type="submit" className="btn btn-default btn-primary custom-btn" style={{ width: "9%" }} onClick={() => this.setState({deleted:true})}> X </button>
+
+            <div id = {'container'+this.props.serial}>
         <div className="form-group">
           <label className="col-sm-2 control-label">Headquarter</label>
           <div className="col-sm-10">
@@ -473,7 +513,7 @@ export class Template extends Component {
               style={{ width: "100%", display: 'inline-block', border: this.state.doctorStyle }}
               id={"doctor" + this.state.id}
               labelKey="name"
-              onChange={(s) => { this.props.showHideName(this.props.id, s); this.state.selectedDoctor = s; this.validateDoctor(s) }}
+              onChange={(s) => { this.showHideName(this.props.serial, s); this.state.selectedDoctor = s; this.validateDoctor(s) }}
               //selected = {this.state.selectedDoctor}
               options={this.state.doctorList != null && this.state.doctorList}
               placeholder="Choose Doctor"
@@ -568,7 +608,7 @@ export class Template extends Component {
 
         <br />
 
-
+        </div>
 
 
       </form>
