@@ -422,6 +422,13 @@ export class Template extends Component {
     }
   }
 
+  hideTemplate(index)
+  {
+    let templateId = 'container'+index
+    console.log('showhiede for: ' + templateId + ' -- ' + JSON.stringify(index))
+    document.getElementById(templateId).style.display = "none";
+  }
+
   showHideName(id, name) {
     if (name != 'undefined' && name.length > 0) {
       let findIndex = id
@@ -474,7 +481,7 @@ export class Template extends Component {
         this.props.removeFromParent(this.props.serial)
        
       })
-      
+
       console.log('removing:'+this.state.selectedDoctor)
       return null;
     }

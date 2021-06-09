@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, useState } from 'react';
 import moment, { calendarFormat, RFC_2822 } from 'moment';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Redirect } from 'react-router-dom';
@@ -136,6 +136,7 @@ class DoctorVisits extends Component {
       for (let j = 0; j < this.state.doctorVisitFormList.length; j++) {
         let formValidity = this.state.doctorVisitFormList[j].current.validateForm();
         valid = valid & formValidity
+        this.state.doctorVisitFormList[j].current.hideTemplate(j);
 
       }
       if (moment().isBefore(this.state.date)) {
@@ -152,6 +153,9 @@ class DoctorVisits extends Component {
         logsfield = logsfield + "1. ";
         document.getElementById('logs').innerHTML = logsfield
         //console.log("list size:" + list.length)
+        // for (let i = 0; i < list.length; i++) {
+        //   this.showHide({ index: i }, true)
+        // }
 
         list.push(React.createRef());
         logsfield = logsfield + "2. ";
@@ -170,9 +174,12 @@ class DoctorVisits extends Component {
      console.log('removeTemplate called for index: ' + JSON.stringify(item))
     if(this.state.doctorVisitFormList[item])
     {
+    //this.state.doctorVisitFormList[item].current.hideTemplate();
     let items = [...this.state.doctorVisitFormList]
     items.splice(item,1);
-
+   // document.getElementById("form"+index.index).style.display= "none";
+    //let filledDoctors = JSON.parse(sessionStorage.getItem('filledDoctors'));
+    
     this.setState({doctorVisitFormList : items})
     }
     
