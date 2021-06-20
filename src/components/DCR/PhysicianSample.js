@@ -73,10 +73,9 @@ export class PhysicianSample extends Component {
                         //selected={[{ name: 'Srigar', id: 1 }]}
                         />
                         <span >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
-                        <img src={plus} style={{ height: "10%", width: "10%" }} rounded  id={'plus'+this.props.id} onClick={() => this.changeSampleCount(true, this.props.id)} /> <span >&nbsp;</span>
-                        <input type="text" style={{ width: "15%", textAlign: "center" }} id={'sampleCounter'+this.props.id} name="quantity" placeholder="0" onChange={this.editSampleCount} /> <span >&nbsp;</span>
                         <img src={minus} rounded style={{ height: "10%", width: "10%" }} id={'minus'+this.props.id} onClick={() => this.changeSampleCount(false, this.props.id)} />
-
+                        <input type="text" style={{ width: "15%", textAlign: "center" }} id={'sampleCounter'+this.props.id} name="quantity" placeholder="0" onChange={this.editSampleCount} /> <span >&nbsp;</span>
+                        <img src={plus} style={{ height: "10%", width: "10%" }} rounded  id={'plus'+this.props.id} onClick={() => this.changeSampleCount(true, this.props.id)} /> <span >&nbsp;</span>
                     </div>
                 </div>
             </div>

@@ -13,7 +13,7 @@ export class Template extends Component {
     super();
     this.state = {
       selectedDate: {},
-      doctorVisitFormList: new Array(),
+      doctorVisitFormList: [],
       date: new Date(),
       headquarterList: [],
       userHeadquarter: '',
@@ -63,8 +63,8 @@ export class Template extends Component {
     this.validateForm = this.validateForm.bind(this)
     this.hideTemplate = this.hideTemplate.bind(this)
 
-  }
 
+  }
 
   returnFilledForm() {
     let doctor = '';
@@ -74,7 +74,7 @@ export class Template extends Component {
     if (this.state.selectedDoctor[0]) {
       doctor = this.state.selectedDoctor[0].id;
     }
-    console.log(this.state.visitedWith)
+    //console.log(this.state.visitedWith)
     for (let i = 0; this.state.visitedWith && i < this.state.visitedWith.length; i++) {
       accompanyAssociates.push({ "managerId": this.state.visitedWith[i].id })
     }
@@ -86,6 +86,7 @@ export class Template extends Component {
     }
     let form =
     {
+      "templateId":this.state.id,
       "headquarterId": this.state.selectedHeadquarter.id,
       "businessareaId": this.state.selectedLocation.id,
       "entityType": "DOCTOR",
@@ -97,7 +98,16 @@ export class Template extends Component {
       "gift": selectedGiftList,
       "remarks": this.state.remarks
     }
-
+    // console.log("selected state in doctorvisitFormTemplate")
+    // console.log(JSON.stringify(this.state.selectedHeadquarter));
+    // console.log(JSON.stringify(this.state.selectedLocation))
+    // console.log(JSON.stringify(this.state.selectedDoctor[0]))
+    // console.log(JSON.stringify(this.state.selectedProducts ))
+    // console.log(JSON.stringify( this.state.selectedGifts ))
+    // console.log(JSON.stringify(this.state.lbl ))
+    // console.log(JSON.stringify(this.state.visitedWith))
+    // console.log(JSON.stringify(this.state.remarks))
+    
     return form;
   }
 
@@ -114,9 +124,11 @@ export class Template extends Component {
     else
       this.populateData(item)
 
+
   }
 
   populateData(item) {
+    let formData= this.props.formData;
     item = JSON.parse(sessionStorage.getItem(commonConstant.GET_ALL_HEADQUARTER))
     let headquarterIdInSession = sessionStorage.getItem(commonConstant.USER_DEFAULT_HEADQUARTER_ID);
     let userHeadquarterTemp = '';
@@ -140,7 +152,7 @@ export class Template extends Component {
     this.setState({ productList: JSON.parse(sessionStorage.getItem(commonConstant.GET_ALL_PRODUCT)) })
 
     this.setState({ giftsList: JSON.parse(sessionStorage.getItem(commonConstant.GET_ALL_GIFT)) })
-    this.setState({ userList: JSON.parse(sessionStorage.getItem(commonConstant.GET_ALL_USER)) }, () => this.state.userList.map(user => { user.name = user.name + ' (' + user.designation + ')' }))
+    this.setState({ userList: JSON.parse(sessionStorage.getItem(commonConstant.GET_ALL_USER)) }, () => { if(this.state.userList) this.state.userList.map(user => { user.name = user.name + ' (' + user.designation + ')' })})
     let preSelectedLocation = JSON.parse(sessionStorage.getItem('lastSelectedLocation'));
     if (preSelectedLocation != null) {
       this.setState({ selectedLocation: preSelectedLocation }, () => this.handleLocationSelection(preSelectedLocation.id))
@@ -148,7 +160,10 @@ export class Template extends Component {
 
     //console.log(JSON.stringify(this.state.userList));
     this.getLocationList(JSON.parse(sessionStorage.getItem(commonConstant.GET_DOCTORS_SHOPS_BY_HEADQUARTER_ID)));
-    this.addPhysicianSamples()
+    this.addPhysicianSamples();
+
+    console.log("received form data from parent "+JSON.stringify(formData)+"  index"+this.props.id);
+    
   }
 
   getLocationList(totalList) {
@@ -177,7 +192,7 @@ export class Template extends Component {
   handleHeadquarterSelection(e) {
 
     var selectedHeadQuarterTemp = [];
-    console.log("headquarter selected: " + e)
+    //console.log("headquarter selected: " + e)
 
     for (var i = 0; this.state.headquarterList != null && i < this.state.headquarterList.length; i++) {
       // alert(this.state.headquarterList[i].id==e)
@@ -311,7 +326,7 @@ export class Template extends Component {
   }
 
   validateDoctor(e) {
-    console.log('selected doctor' + JSON.stringify(e))
+    //console.log('selected doctor' + JSON.stringify(e))
     let filledDoctors = JSON.parse(sessionStorage.getItem('filledDoctors'));
 
     if (!(e && e[0])) {
@@ -370,7 +385,7 @@ export class Template extends Component {
     let errorBorderStyle = '2px solid red'
     let defaultBorderStyle = '1px solid #cccccc';
    // let headquarterStyle = document.getElementById("headquarterDropdown" + this.state.id).style.border
-    console.log(JSON.stringify(visit) + '----' + this.state.id)
+   // console.log(JSON.stringify(visit) + '----' + this.state.id)
     if (visit.headquarterId == null || visit.headquarterId.length == 0) {
       valid = false;
       this.setState({ headquarterStyle: this.state.errorBorderStyle })
@@ -398,6 +413,14 @@ export class Template extends Component {
     else
       this.setState({ productStyle: 'searchBox' })
 
+    if(visit.lbl == null || visit.lbl.length ==0){
+      valid = false;
+      this.setState({lblStyle : 'red'})
+    }
+    else
+    this.setState({lblStyle : 'searchBox'})
+
+
        if (!valid)
          document.getElementById('showHide' + this.props.serial).style.color = 'red'
        else
@@ -405,10 +428,6 @@ export class Template extends Component {
     return valid;
   }
 
-  hideTemplate()
-  {
-    document.getElementById(this.props.id).innerHTML = "<div/>"
-  }
 
   showHide(index, hideFlag) { 
 
@@ -422,13 +441,6 @@ export class Template extends Component {
     }
   }
 
-  hideTemplate(index)
-  {
-    let templateId = 'container'+index
-    console.log('showhiede for: ' + templateId + ' -- ' + JSON.stringify(index))
-    document.getElementById(templateId).style.display = "none";
-  }
-
   showHideName(id, name) {
     if (name != 'undefined' && name.length > 0) {
       let findIndex = id
@@ -436,6 +448,14 @@ export class Template extends Component {
       document.getElementById('showHide' + findIndex).innerHTML = (findIndex + 1) + '. Doctor Visit : ' + name[0].name;
     }
   }
+
+  hideTemplate(index)
+  {
+    let templateId = 'container'+index
+    //console.log('showhiede for: ' + templateId + ' -- ' + JSON.stringify(index))
+    document.getElementById(templateId).style.display = "none";
+  }
+
   render() {
 
     let headquarterItems = null;
@@ -524,6 +544,7 @@ export class Template extends Component {
               //selected = {this.state.selectedDoctor}
               options={this.state.doctorList != null && this.state.doctorList}
               placeholder="Choose Doctor"
+              
             //selected={[{ name: 'Srigar', id: 1 }]}
             />
             {this.state.doctorExists != '' && <p style={{ color: 'red' }}>This doctor already selected in DCR</p>}
@@ -573,9 +594,9 @@ export class Template extends Component {
 
         <div className="form-group">
           <div className="col-sm-offset-2 col-sm-12 control-label">
-            <label className="label" id={'lbl' + this.state.id} style={{ border: this.state.lblStyle }} >LBL</label>
-            <input className="col-sm-offset-2 col-sm-5" padding={30} type="radio" name="radio" value="Yes" className="k-radio" onChange={(e) => { this.setState({ lbl: e.target.value }) }} /> <label>Yes</label> <span>&nbsp;&nbsp;&nbsp;&nbsp;</span>
-            <input className="col-sm-offset-2 col-sm-5" padding={30} type="radio" name="radio" value="No" className="k-radio" onChange={(e) => { this.setState({ lbl: e.target.value }) }} />  <label>No</label>
+            <label className="label" id={'lbl' + this.state.id} style={{ color: this.state.lblStyle }} >LBL</label>
+            <label><input className="col-sm-offset-2 col-sm-5" padding={30} type="radio" name="radio" value="true" className="k-radio" onChange={(e) => { this.setState({ lbl: e.target.value }) }} checked= {this.state.lbl == 'true'} /> Yes</label> <span>&nbsp;&nbsp;&nbsp;&nbsp;</span>
+            <label><input className="col-sm-offset-2 col-sm-5" padding={30} type="radio" name="radio" value="false" className="k-radio" onChange={(e) => { this.setState({ lbl: e.target.value }) }} checked= {this.state.lbl == 'false'}/> No</label>
           </div>
         </div>
 
