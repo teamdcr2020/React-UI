@@ -67,7 +67,17 @@ class DoctorVisits extends Component {
 
   componentDidMount() {
     this.waitForData()
-    sessionStorage.removeItem('filledDoctors')
+    sessionStorage.removeItem('filledDoctors');
+
+    var n = sessionStorage.length;
+    while (n--) {
+      var key = sessionStorage.key(n);
+      if (key.startsWith("selectedPhysicanSample")) {
+        sessionStorage.removeItem(key);
+      }
+    }
+
+    
     // var item = JSON.parse(sessionStorage.getItem(commonConstant.GET_ALL_HEADQUARTER)) 
     // var headquarterInSession = sessionStorage.getItem('headquarterId');
     // console.log("item: "+JSON.stringify(headquarterInSession))

@@ -25,7 +25,7 @@ export class Template extends Component {
       giftsList: [],
       locationLoading: false,
       doctorLoading: false,
-      PhysicianSamples: [],
+      physicianSamples: [React.createRef()],
       userNameWithDesignationList: [],
       selectedHeadquarter: { id: 0, name: 'Headquarter' },
       selectedLocation: { id: 0, name: 'Location' },
@@ -49,7 +49,8 @@ export class Template extends Component {
       remarksStyle: '1px solid #cccccc',
       doctorExists: false,
       displayStatus: 'block',
-      deleted: false
+      deleted: false,
+      physicianSampleError: false
 
     }
     this.handleHeadquarterSelection = this.handleHeadquarterSelection.bind(this)
@@ -62,6 +63,7 @@ export class Template extends Component {
     this.returnFilledForm = this.returnFilledForm.bind(this)
     this.validateForm = this.validateForm.bind(this)
     this.hideTemplate = this.hideTemplate.bind(this)
+    this.getPhysicianSample = this.getPhysicianSample.bind(this)
 
 
   }
@@ -84,6 +86,7 @@ export class Template extends Component {
     for (let i = 0; this.state.selectedGifts && i < this.state.selectedGifts.length; i++) {
       selectedGiftList.push({ "gift": this.state.selectedGifts[i].id })
     }
+    this.getPhysicianSample();
     let form =
     {
       "templateId":this.state.id,
@@ -91,7 +94,7 @@ export class Template extends Component {
       "businessareaId": this.state.selectedLocation.id,
       "entityType": "DOCTOR",
       "entityId": doctor,
-      "physicianSample": this.state.selectedPhysicanSample,
+      "physicianSample": JSON.parse(sessionStorage.getItem("selectedPhysicanSample"+this.state.id)),
       "product": selectedProductList,
       "lbl": this.state.lbl,
       "accompanyAssociate": accompanyAssociates,
@@ -111,6 +114,32 @@ export class Template extends Component {
     return form;
   }
 
+  getPhysicianSample()
+  {
+    let valid  = true;
+    let sampleList = [];
+    this.state.physicianSamples.map((items, index)=> {
+      console.log(items.current.validateSample());
+      let currentValid = items.current.validateSample()
+      valid = valid & currentValid;
+      if(currentValid)
+      {
+        sampleList.push(items.current.returnSample());
+      }
+    })
+
+    if(!valid)
+    {
+      this.setState({physicianSampleError: true})  
+    }
+    else
+    {
+      this.setState({physicianSampleError: false})  
+      sessionStorage.setItem("selectedPhysicanSample"+this.state.id, JSON.stringify(sampleList));
+      this.setState({selectedPhysicanSample: sampleList}, ()=>{console.log("selectedPhysicianSample set : "+JSON.stringify(this.state.selectedPhysicanSample))})
+    }
+  }
+
   componentDidMount() {
     let item = JSON.parse(sessionStorage.getItem(commonConstant.GET_ALL_HEADQUARTER))
     this.setState({ id: this.props.id.substring(8) })
@@ -124,6 +153,8 @@ export class Template extends Component {
     else
       this.populateData(item)
 
+      sessionStorage.removeItem(commonConstant.SELECTED_SAMPLES)
+    
 
   }
 
@@ -160,7 +191,7 @@ export class Template extends Component {
 
     //console.log(JSON.stringify(this.state.userList));
     this.getLocationList(JSON.parse(sessionStorage.getItem(commonConstant.GET_DOCTORS_SHOPS_BY_HEADQUARTER_ID)));
-    this.addPhysicianSamples();
+    //this.addPhysicianSamples();
 
     console.log("received form data from parent "+JSON.stringify(formData)+"  index"+this.props.id);
     
@@ -312,14 +343,28 @@ export class Template extends Component {
 
   addPhysicianSamples() {
 
-    let samples = this.state.PhysicianSamples;
-    //  console.log(samples.length + ": " + JSON.stringify(samples))
-    samples.push(new PhysicianSample());
-    this.setState({ physicianSamples: samples })
+    let valid  = true;
+    this.state.physicianSamples.map((items, index)=> {
+      console.log(items.current.validateSample());
+       valid = valid & items.current.validateSample()
+    })
+
+    if(!valid)
+    {
+      this.setState({physicianSampleError: true})  
+    }
+    else
+    {
+    let samples = [...this.state.physicianSamples];
+    
+    samples.push(React.createRef());
+    this.setState({ physicianSamples: samples }, ()=>console.log(this.state.physicianSamples.length + " new length"))
+    this.setState({physicianSampleError: false})
+    }
   }
 
   removePhysicianSample() {
-    let samples = this.state.PhysicianSamples;
+    let samples = [...this.state.physicianSamples];
     //  console.log(samples.length + ": " + JSON.stringify(samples))
     samples.pop();
     this.setState({ physicianSamples: samples })
@@ -420,6 +465,9 @@ export class Template extends Component {
     else
     this.setState({lblStyle : 'searchBox'})
 
+    if(this.state.physicianSampleError)
+    valid = false;
+    
 
        if (!valid)
          document.getElementById('showHide' + this.props.serial).style.color = 'red'
@@ -478,9 +526,9 @@ export class Template extends Component {
     let samples = null;
     samples = (
       <div>
-        {this.state.PhysicianSamples.map((form, index) => {
+        {this.state.physicianSamples.map((form, index) => {
           //   {this.setState({noOfForms: this.state.noOfForms+1})}
-          return <PhysicianSample id={index} key={index} size={this.state.PhysicianSamples != null && this.state.PhysicianSamples.length} />
+          return <PhysicianSample parent = {this.props.id} id={index} key={index} size={this.state.physicianSamples != null && this.state.physicianSamples.length} ref={this.state.physicianSamples[index]} />
         })}
       </div>
     );
@@ -603,6 +651,7 @@ export class Template extends Component {
         <div>
           <label className="col-sm-2 control-label">Physician Sample</label>
           {samples}
+          {this.state.physicianSampleError && <label style={{color: 'red'}}> Please correct the sample errors </label>} <br/>
           <label className='normalLabel' onClick={this.addPhysicianSamples}>Add more</label> <label className='normalLabel' onClick={this.removePhysicianSample}>Remove</label>
         </div>
         <br />

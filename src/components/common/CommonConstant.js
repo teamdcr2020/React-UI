@@ -81,3 +81,4 @@ export const STATUS_DELETED = 5;
 export const REQUEST_TEMPLATE = {operation:'', authorization:'Bearer '}
 export const USER_DEFAULT_HEADQUARTER = 'defaultHeadquarter';
 export const USER_DEFAULT_HEADQUARTER_ID = 'defaultHeadquarterId';
+export const SELECTED_SAMPLES = 'selectedPhysicianSamples';
