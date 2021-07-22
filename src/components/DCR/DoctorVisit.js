@@ -50,7 +50,8 @@ class DoctorVisits extends Component {
       awaitingResponse: true,
       datePickerColor: 'react-datepicker__input-container',
       submitError: false,
-      formValidity: false
+      formValidity: false,
+      waitingSubmission: false
 
     }
 
@@ -77,7 +78,7 @@ class DoctorVisits extends Component {
       }
     }
 
-    
+
     // var item = JSON.parse(sessionStorage.getItem(commonConstant.GET_ALL_HEADQUARTER)) 
     // var headquarterInSession = sessionStorage.getItem('headquarterId');
     // console.log("item: "+JSON.stringify(headquarterInSession))
@@ -161,10 +162,10 @@ class DoctorVisits extends Component {
 
 
       if (valid) {
-        this.setState({submitError: false})
-        this.setState({formValidity: true})
+        this.setState({ submitError: false })
+        this.setState({ formValidity: true })
         //document.getElementById('logs').innerHTML  = 'Add forms triggered';
-      //  let logsfield = '<br/> Add forms triggered' + document.getElementById('logs').innerHTML;
+        //  let logsfield = '<br/> Add forms triggered' + document.getElementById('logs').innerHTML;
 
         var list = [...this.state.doctorVisitFormList];
         //logsfield = logsfield + "1. ";
@@ -175,13 +176,13 @@ class DoctorVisits extends Component {
         // }
 
         list.push(React.createRef());
-    //    logsfield = logsfield + "2. ";
-       // document.getElementById('logs').innerHTML = logsfield
+        //    logsfield = logsfield + "2. ";
+        // document.getElementById('logs').innerHTML = logsfield
         //console.log('form size before: ' + this.state.doctorVisitFormList.length)\
         e.preventDefault();
         this.setState({ doctorVisitFormList: [...list] });
         //console.log('form size after: ' + this.state.doctorVisitFormList.length)
-       // document.getElementById('logs').innerHTML = logsfield + "3. "
+        // document.getElementById('logs').innerHTML = logsfield + "3. "
       }
 
       return valid;
@@ -242,23 +243,23 @@ class DoctorVisits extends Component {
       }
     }
     if (submissionObject.dcrrow && submissionObject.dcrrow.length > 0 && allFormsValid) {
-      this.setState({submitError: false})
+      this.setState({ submitError: false })
       payload = submissionObject;
       payload = { ...payload, operation, authorization: 'bearer ' + JSON.parse(sessionStorage.getItem('accessToken')) }
       console.log("final payload: " + JSON.stringify(payload))
+      this.setState({waitingSubmission:true});
       PostData(operation, payload, url).then((result) => {
         console.log("DCR submission response: " + JSON.stringify(result))
-        if(result && result.data && result.data.success)
-        {
-          alert("successfully submitted "+this.state.doctorVisitFormList.length+" Doctor Visits")
+        this.setState({waitingSubmission:false});
+        if (result && result.data && result.data.success) {
+          alert("successfully submitted " + this.state.doctorVisitFormList.length + " Doctor Visits")
           this.props.history.push('/home');
         }
 
       });
     }
-    else
-    {
-      this.setState({submitError: true})
+    else {
+      this.setState({ submitError: true })
     }
   }
 
@@ -350,15 +351,21 @@ class DoctorVisits extends Component {
 
             {formList}
 
-            
+
 
             <div className="form-group">
               <br /><br />
               <div className="col-sm-offset-2 col-sm-10">
-                {this.state.submitError &&<label id='logs'  style={{ color: 'red', width: "100%" , textAlign: 'center'}} > Please correct the errors </label> }
+                {this.state.submitError && <label id='logs' style={{ color: 'red', width: "100%", textAlign: 'center' }} > Please correct the errors </label>}
                 {/* <button type="submit" className="btn btn-default btn-primary custom-btn" style={{ width: "49%" }} onClick={() => this.removeTemplate()}> Remove </button>  */}
                 <button type="button" style={{ width: "49%" }} className="btn btn-default btn-primary custom-btn " onClick={(e) => this.addForms(e)}>Add More </button>
-                <button type="submit" style={{ width: "49%" }} className="btn btn-default btn-primary custom-btn" onClick={(e) => this.aggregateFormDataForSubmission(e)}>Submit</button>
+                {
+                this.state.waitingSubmission 
+                ? 
+                  <label  style={{ width: "49%", height: '20px' }} > <LoadingOverlay className='overlay-box' active='true' text='Loading....' spinner={<BeatLoader size='24px' color='blue' loading />} /> </label>
+                :
+                  <button type="submit" style={{ width: "49%" }} className="btn btn-default btn-primary custom-btn" onClick={(e) => this.aggregateFormDataForSubmission(e)}>Submit</button>
+                }
               </div>
             </div>
             <br />
