@@ -159,6 +159,8 @@ export class PhysicianSample extends Component {
         let flag = false
         if (this.state.product && this.state.count > 0 && !this.state.sampleError)
             flag =  true;
+        else if(Object.keys(this.state.product).length == 0  && this.state.count == 0)
+            flag = true
         return flag;
     }
 
