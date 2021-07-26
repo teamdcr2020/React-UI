@@ -9,6 +9,7 @@ import { BeatLoader } from 'react-spinners'
 import LoadingOverlay from 'react-loading-overlay'
 import jwt_decode from 'jwt-decode'
 import * as commonConstant from '../common/CommonConstant'
+import moment from 'moment';
 
 
 const LoginToAccount = styled.h1`
@@ -47,10 +48,10 @@ class Login extends Component {
 
         //alert("payload before: "+JSON.stringify(payload))
         payload = { ...payload, operation, authorization: 'bearer ' + JSON.parse(sessionStorage.getItem('accessToken')) }
-        // alert("payload after: "+JSON.stringify(payload))
+         console.log("payload for operation: "+operation+'  --  '+JSON.stringify(payload))
         PostData(operation, payload, baseURL).then((result) => {
 
-            // console.log("result from login service call : "+JSON.stringify(result.data.data));
+             console.log("result from login service call : "+operation+"  :  "+JSON.stringify(result.data.data));
 
             if (result.data) {
 
@@ -85,6 +86,7 @@ class Login extends Component {
         promises.push(this.saveDatatoSession(commonConstant.controllerURL, this.state, commonConstant.GET_ALL_PRODUCT));
         promises.push(this.saveDatatoSession(commonConstant.controllerURL, this.state, commonConstant.GET_ALL_USER));
         promises.push(this.saveDatatoSession(commonConstant.controllerURL, { id: headquarterId }, commonConstant.GET_DOCTORS_SHOPS_BY_HEADQUARTER_ID));
+        promises.push(this.saveDatatoSession(commonConstant.controllerURL, { 'userId': userprofileData.userProfile.id, 'entryDate': moment() }, commonConstant.GET_DCR_BY_USER_AND_DATE));
 
         return Promise.all(promises).then(() => {
             let totalList = sessionStorage.getItem(commonConstant.GET_DOCTORS_SHOPS_BY_HEADQUARTER_ID);

@@ -207,10 +207,10 @@ class DoctorVisits extends Component {
   aggregateFormDataForSubmission(e) {
     let valid = true;
     let submissionObject = {}
-    let operation = 'adddcr';
+    let operation = commonConstant.ADD_DCR;
     let userprofileData = JSON.parse(sessionStorage.getItem('userData'))
     let userId = null;
-    let url = "https://khttyrarnl.execute-api.us-east-1.amazonaws.com/dev/dcrinfo";
+    let url = commonConstant.dcrURL;
     let payload = {};
     if (userprofileData) {
 
@@ -330,13 +330,13 @@ class DoctorVisits extends Component {
       <div >
         {this.state.awaitingResponse
           ?
-          <LoadingOverlay className='overlay-box' active='true' text='Loading....' spinner={<BeatLoader size='24px' color='blue' loading />} />
+          <p style={{ width: "49%", top:"49%" }} ><LoadingOverlay className='overlay-box'   active='true' text='Loading....' spinner={<BeatLoader size='24px' color='blue' loading />} /></p>
           :
 
           <div>
             <Header {...this.props} />
 
-            <h2 style={{ textAlign: 'center' }}>Add Doctor Visits</h2>
+            <h2 style={{ textAlign: 'center' }}>Doctor Visits</h2>
             <br />
             <div className="form-group">
 

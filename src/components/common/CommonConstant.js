@@ -6,6 +6,7 @@ export const productURL =  'placeholder';
 export const giftURL = 'https://xnma5fuy28.execute-api.us-east-1.amazonaws.com/dev/giftinfo';
 export const companyURL = 'https://z1ix1c2cs8.execute-api.us-east-1.amazonaws.com/dev/companyinfo';
 export const userURL = 'placeholder';
+export const dcrURL = "https://khttyrarnl.execute-api.us-east-1.amazonaws.com/dev/dcrinfo";
 
 export const LOGIN_OPERATION = "login";
 export const ADD_DOCTOR = "adddoctor";
@@ -82,3 +83,7 @@ export const REQUEST_TEMPLATE = {operation:'', authorization:'Bearer '}
 export const USER_DEFAULT_HEADQUARTER = 'defaultHeadquarter';
 export const USER_DEFAULT_HEADQUARTER_ID = 'defaultHeadquarterId';
 export const SELECTED_SAMPLES = 'selectedPhysicianSamples';
+
+export const ADD_DCR = 'adddcr';
+export const GET_DCR_BY_USER_AND_DATE = 'getdcrbyuseridandentrydate';
+export const UPDATE_DCR_BY_ID = 'updatedcrbyid';

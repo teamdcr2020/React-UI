@@ -172,7 +172,7 @@ class Home extends Component {
                                         <img className="card-img-top photo" src={doctor_visit_logo} alt="doctor's visit logo" />
 
                                         <label className="doc_visit">Doctor's Visit</label>
-                                        <button className="add_doc_visit" onClick={this.navigateToDoctorVisitForm}> + Add Doctor's Visit</button>
+                                        <button className="add_doc_visit" onClick={this.navigateToDoctorVisitForm}> Manage Doctor's Visit</button>
                                     </div>
                                 </div>
 
