@@ -51,7 +51,8 @@ class DoctorVisits extends Component {
       datePickerColor: 'react-datepicker__input-container',
       submitError: false,
       formValidity: false,
-      waitingSubmission: false
+      waitingSubmission: false,
+      dcrAvailableFlag: false
 
     }
 
@@ -90,10 +91,11 @@ class DoctorVisits extends Component {
     let flag1 = sessionStorage.getItem(commonConstant.GET_DOCTORS_SHOPS_BY_HEADQUARTER_ID);
     let flag2 = sessionStorage.getItem(commonConstant.GET_ALL_HEADQUARTER);
     let flag3 = sessionStorage.getItem(commonConstant.GET_ALL_USER);
+    let flag4 = sessionStorage.getItem(commonConstant.GET_DCR_BY_USER_AND_DATE);
     //let flag4 = sessionStorage.getItem(commonConstant.GET_DOCTORS_SHOPS_BY_HEADQUARTER_ID);
     //let flag5 = sessionStorage.getItem(commonConstant.GET_DOCTORS_SHOPS_BY_HEADQUARTER_ID);
     // console.log(flag1 + ' - ' + flag2 + ' - ' + flag3)
-    if (flag1 && flag2 && flag3) {
+    if (flag1 && flag2 && flag3 && flag4) {
       this.setState({ awaitingResponse: false })
       setTimeout(() => {
         console.log('timeout executing 1 --')
@@ -138,6 +140,7 @@ class DoctorVisits extends Component {
       }
       else {
         this.setState({ datePickerColor: 'react-datepicker__input-container' })
+        
       }
 
     })
@@ -247,10 +250,10 @@ class DoctorVisits extends Component {
       payload = submissionObject;
       payload = { ...payload, operation, authorization: 'bearer ' + JSON.parse(sessionStorage.getItem('accessToken')) }
       console.log("final payload: " + JSON.stringify(payload))
-      this.setState({waitingSubmission:true});
+      this.setState({ waitingSubmission: true });
       PostData(operation, payload, url).then((result) => {
         console.log("DCR submission response: " + JSON.stringify(result))
-        this.setState({waitingSubmission:false});
+        this.setState({ waitingSubmission: false });
         if (result && result.data && result.data.success) {
           alert("successfully submitted " + this.state.doctorVisitFormList.length + " Doctor Visits")
           this.props.history.push('/home');
@@ -304,6 +307,7 @@ class DoctorVisits extends Component {
     }
     let formList = null;
     let counter = 1;
+
     formList = (
       <div>
 
@@ -312,78 +316,89 @@ class DoctorVisits extends Component {
           //   {this.setState({noOfForms: this.state.noOfForms+1})}
           //console.log('index while population of doctor visit template' + index);
           return (
-
-
-
             <Template formData={this.state.doctorVisitFormData[index]} id={'template' + index} serial={index} removeFromParent={this.removeItem} key={index} size={this.state.doctorVisitFormList != null && this.state.doctorVisitFormList.length} /*showHideName={this.showHideName}*/ ref={this.state.doctorVisitFormList[index]} />
-
-
           )
         })}
 
       </div>
-
     );
+
+
+    let isDateToday = false;
+
+    if (moment().isSame(this.state.date)) {
+      isDateToday = true;
+      let dcrForDate = sessionStorage.getItem(commonConstant.GET_DCR_BY_USER_AND_DATE);
+      if (dcrForDate && !dcrForDate.errorMessage) {
+        this.setState({ dcrAvailableFlag: true });
+      }
+    }
+
 
     return (
 
       <div >
-        {this.state.awaitingResponse
-          ?
-          <p style={{ width: "49%", top:"49%" }} ><LoadingOverlay className='overlay-box'   active='true' text='Loading....' spinner={<BeatLoader size='24px' color='blue' loading />} /></p>
-          :
 
-          <div>
-            <Header {...this.props} />
 
-            <h2 style={{ textAlign: 'center' }}>Doctor Visits</h2>
-            <br />
-            <div className="form-group">
+        <div>
+          <Header {...this.props} />
 
-              <div className="col-sm-6  col-md-6 col-lg-6" style={{ display: 'inline-block' }}>
-                <label className="col-sm-3  col-md-4 col-lg-4 control-label" style={{ width: "40%", paddingLeft: "0%" }}>Select Date</label>
-                <DatePicker className={"col-sm-3  col-md-8 col-lg-8  " + this.state.datePickerColor} id='DCRDate' selected={this.state.date} style={{ width: "60%" }} locale='el' dateFormat="dd/MM/yyyy" onChange={this.handleDateChange} />
-              </div>
+          <h2 style={{ textAlign: 'center' }}>Doctor Visits</h2>
+          <br />
+          <div className="form-group"> 
+
+            <div className="col-sm-6  col-md-6 col-lg-6" style={{ display: 'inline-block' }}>
+              <label className="col-sm-3  col-md-4 col-lg-4 control-label" style={{ width: "40%", paddingLeft: "0%" }}>Select Date</label>
+              <DatePicker className={"col-sm-3  col-md-8 col-lg-8  " + this.state.datePickerColor} id='DCRDate' selected={this.state.date} style={{ width: "60%" }} locale='el' dateFormat="dd/MM/yyyy" onChange={this.handleDateChange} />
             </div>
+          </div>
 
-            <br />
+          <br />
+
+          {
+            this.state.awaitingResponse
+              ?
+              <p style={{ width: "100%", top: "100%" }} ><LoadingOverlay className='overlay-box' active='true' text='Loading....' spinner={<BeatLoader size='24px' color='blue' loading />} /></p>
+              :
+
+              !this.state.dcrAvailableFlag &&
+              <div>
+
+                {formList}
+
+                <div className="form-group">
+                  <br /><br />
+                  <div className="col-sm-offset-2 col-sm-10">
+                    {this.state.submitError && <label id='logs' style={{ color: 'red', width: "100%", textAlign: 'center' }} > Please correct the errors </label>}
+                    {/* <button type="submit" className="btn btn-default btn-primary custom-btn" style={{ width: "49%" }} onClick={() => this.removeTemplate()}> Remove </button>  */}
+                    <button type="button" style={{ width: "49%" }} className="btn btn-default btn-primary custom-btn " onClick={(e) => this.addForms(e)}>Add More </button>
+                    {
+                      this.state.waitingSubmission
+                        ?
+                        <label style={{ width: "49%", height: '20px' }} > <LoadingOverlay className='overlay-box' active='true' text='Loading....' spinner={<BeatLoader size='24px' color='blue' loading />} /> </label>
+                        :
+                        <button type="submit" style={{ width: "49%" }} className="btn btn-default btn-primary custom-btn" onClick={(e) => this.aggregateFormDataForSubmission(e)}>Submit</button>
+                    }
+                  </div>
+                </div>
 
 
-            {formList}
-
-
-
-            <div className="form-group">
-              <br /><br />
-              <div className="col-sm-offset-2 col-sm-10">
-                {this.state.submitError && <label id='logs' style={{ color: 'red', width: "100%", textAlign: 'center' }} > Please correct the errors </label>}
-                {/* <button type="submit" className="btn btn-default btn-primary custom-btn" style={{ width: "49%" }} onClick={() => this.removeTemplate()}> Remove </button>  */}
-                <button type="button" style={{ width: "49%" }} className="btn btn-default btn-primary custom-btn " onClick={(e) => this.addForms(e)}>Add More </button>
-                {
-                this.state.waitingSubmission 
-                ? 
-                  <label  style={{ width: "49%", height: '20px' }} > <LoadingOverlay className='overlay-box' active='true' text='Loading....' spinner={<BeatLoader size='24px' color='blue' loading />} /> </label>
-                :
-                  <button type="submit" style={{ width: "49%" }} className="btn btn-default btn-primary custom-btn" onClick={(e) => this.aggregateFormDataForSubmission(e)}>Submit</button>
-                }
               </div>
-            </div>
-            <br />
-            {/* <div className="form-group">
+          }
+          <br />
+          {/* <div className="form-group">
               <div className="col-sm-offset-2 col-sm-10">
                 <button type="submit" className="btn btn-default btn-primary custom-btn">Submit</button>
               </div>
             </div> */}
-            <br />
-            <br />
+          <br />
+          <br />
+
+          <Footer />
 
 
+        </div>
 
-            <Footer />
-
-
-          </div>
-        }
       </div>
 
 
